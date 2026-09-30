@@ -1,42 +1,37 @@
 # CNU FPFT Lab website
 
-전남대학교 FPFT Lab 홈페이지의 **검토용 초안**입니다. 정식 홈페이지 게시 또는 Google Sites 이전이 완료된 상태가 아닙니다.
+전남대학교 식품가공 및 푸드테크연구실 홈페이지입니다.
 
-## 현재 구현
+**Website:** https://cnu-fpft-lab.github.io/
 
-- Home: 소개, 연구 흐름, 네 연구축, 연구 주제, 연락 메뉴
-- Research: 네 연구축의 설명·질문, 연구 주제 초안
-- Members / Publications / Education / Photos / Contact: 메뉴와 페이지 구조; 공개 원문 확보 후 내용 이전
-- 모바일 메뉴, 키보드 탐색, 반응형 화면, 외부 라이브러리 없이 동작하는 정적 HTML/CSS/JS
+## 구성
 
-연구 소개는 이전 홈페이지 기획 논의를 바탕으로 작성한 문구 초안입니다. 기존 사이트의 정확한 전재 또는 최신 연구 상태 검증을 의미하지 않습니다. 구성원, 논문, 연락처, 사진은 임의 생성하지 않았습니다.
+Home, Research, Members, Publications, Education, Photos, Contact의 7개 페이지입니다. 기존 Google Sites에서 교수·구성원 6명·논문 19편·활동 사진 4장·연락처를 선별하고, 소개와 연구 내용은 네 연구축 중심으로 새롭게 구성했습니다.
 
-## 로컬 실행과 수정
+## 수정 방법
 
-Python 3만 필요합니다. 생성된 HTML은 저장소에 포함되어 별도의 서버 빌드가 필요 없습니다.
+Python 3만 필요하며, 생성된 HTML이 저장소에 포함되어 있습니다.
 
 ```sh
 python3 scripts/build.py
 python3 -m http.server 8000
 ```
 
-브라우저에서 `http://localhost:8000`을 엽니다.
+브라우저에서 http://localhost:8000 을 엽니다.
 
-- 공통 레이아웃·본문: `scripts/build.py`
-- 디자인: `assets/style.css`
-- 모바일 메뉴: `assets/main.js`
-- 변경 후 `python3 scripts/build.py`를 실행하고 생성된 HTML도 함께 커밋합니다.
+| 수정 대상 | 파일 |
+| --- | --- |
+| 공통 레이아웃·페이지 본문 | scripts/build.py |
+| 논문 서지정보 | data/publications.json |
+| 공통 디자인 | assets/style.css |
+| 개별 페이지 디자인 | assets/pages.css |
+| 모바일 메뉴·연도 필터 | assets/main.js |
+| 사진 | assets/*.jpg |
 
-## 공개 이전 체크리스트
+수정 후 생성 스크립트를 실행하고 변경된 HTML도 함께 커밋합니다. GitHub Pages는 main의 루트 디렉터리를 게시합니다. 외부 JavaScript 라이브러리, 방문자 추적 코드, 비밀키는 사용하지 않습니다.
 
-1. Google Sites의 **게시된 공개 주소** 또는 페이지별 원문·자료 확보
-2. 연구실 공식 영문명, 학과명, 연구 문구와 현재 프로젝트 상태 확인
-3. 구성원·논문·교육·사진·연락처의 원문 이전 및 링크 확인
-4. 검토용 상단 배너, 대기 안내, Research의 draft 표시 및 robots noindex 제거
-5. 최종 변경을 main에 반영하고 GitHub Pages 게시 설정 및 실제 주소 동작 확인
+## 연구 코드 공유
 
-이 초안에는 자동 배포 설정이 없습니다. 공개 원문 확인 후 GitHub Pages를 설정합니다.
+홈페이지는 연구실 소개를 담당합니다. 연구 코드는 각 연구의 별도 저장소에서 실행 방법·의존성·라이선스와 함께 관리한 뒤 관련 페이지에서 연결할 수 있습니다. 아직 공개되지 않은 코드나 데이터 링크를 생성하지 않습니다.
 
-## 연구 코드 공유 확장
-
-홈페이지 저장소는 연구실 소개를 담당하고, 각 연구의 코드·예제·실행 방법은 별도 저장소에서 관리한 뒤 관련 페이지에 링크할 수 있습니다. 실제 공개된 코드 저장소와 검증된 데이터 링크가 있을 때 추가합니다. 아직 존재하지 않는 링크나 연구 성과는 만들지 않습니다.
+출처와 편집 범위는 CONTENT_SOURCES.md를 참고하세요.
