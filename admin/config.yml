@@ -144,7 +144,7 @@ collections:
               - {label: "ID", name: "id", widget: "string", hint: "URL 식별자. 기존 값은 가능하면 변경하지 마세요."}
               - {label: "번호", name: "number", widget: "string"}
               - {label: "제목", name: "title", widget: "string"}
-              - {label: "보조 제목", name: "title_en", widget: "string"}
+              - {label: "보조 제목", name: "title_en", widget: "string", required: false, hint: "중복 제목이 필요하지 않으면 비워두세요."}
               - {label: "설명", name: "summary", widget: "text", required: false}
               - {label: "Research Overview Figure", name: "overview_figure", widget: "image", required: false, choose_url: false, hint: "연구분야 설명 영역에 표시되는 대표 인포그래픽"}
               - label: "연구 흐름"
