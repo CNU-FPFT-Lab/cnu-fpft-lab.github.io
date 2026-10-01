@@ -1,5 +1,5 @@
 document.documentElement.classList.add('js');
-document.documentElement.lang='en';
+document.documentElement.lang='ko';
 
 const CNU_LOGO='https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_of_Chonnam_National_University.svg';
 const button=document.querySelector('.menu-button');
@@ -26,7 +26,7 @@ document.querySelectorAll('.site-brand-logo').forEach(img=>img.src=CNU_LOGO);
 function setText(selector,text){const el=document.querySelector(selector);if(el)el.textContent=text;}
 function removeOne(selector){document.querySelector(selector)?.remove();}
 
-function normalizeEnglishUI(){
+function normalizeUI(){
   const titles={
     'index.html':'Food Processing and FoodTech Lab | Chonnam National University',
     'research.html':'Research | FPFT Lab',
@@ -63,8 +63,8 @@ function normalizeEnglishUI(){
   });
 
   document.querySelectorAll('.site-footer strong').forEach(el=>el.textContent='Food Processing and FoodTech Lab');
-  document.querySelectorAll('.site-footer .footer-cnu').forEach(el=>el.textContent='Department of Food Science and Technology · Chonnam National University');
-  document.querySelectorAll('.site-footer .footer-cnu + p').forEach(el=>el.textContent='77 Yongbong-ro, Buk-gu, Gwangju 61186, Republic of Korea · Agricultural Building 3');
+  document.querySelectorAll('.site-footer .footer-cnu').forEach(el=>el.textContent='전남대학교 식품공학과');
+  document.querySelectorAll('.site-footer .footer-cnu + p').forEach(el=>el.textContent='광주광역시 북구 용봉로 77 · 농업생명과학대학 3호관');
   document.querySelectorAll('.site-footer a[href="contact.html"]').forEach(el=>el.textContent='Contact →');
 
   if(page==='members.html'){
@@ -73,8 +73,8 @@ function normalizeEnglishUI(){
     setText('.page-hero h1','Members');
     setText('.student-section .section-head h2','Students');
     const detailBlocks=document.querySelectorAll('.profile-details > div');
-    if(detailBlocks[0])detailBlocks[0].innerHTML='<h2>Education</h2><ul><li>B.S. in Food Science and Biotechnology, Seoul National University</li><li>M.S. in Agricultural Biotechnology, Seoul National University</li><li>Ph.D. in Agricultural Biotechnology, Seoul National University</li></ul>';
-    if(detailBlocks[1])detailBlocks[1].innerHTML='<h2>Experience</h2><ul><li><span>2025.03–Present</span> Assistant Professor, Department of Food Science and Technology, Chonnam National University</li><li><span>2023.08–2025.02</span> Postdoctoral Researcher, Smart Manufacturing Research Group, Korea Food Research Institute</li><li><span>2021.09–2023.07</span> Senior Researcher / Research Professor, Food Bio Convergence Institute, Seoul National University</li><li><span>2021.08–2022.08</span> Visiting Professor, Department of Food and Nutrition, Yonsei University</li><li><span>2019.03–2021.02</span> Lecturer, Department of Biofood Science and Technology, Sungshin Women\'s University</li></ul>';
+    if(detailBlocks[0])detailBlocks[0].innerHTML='<h2>Education</h2><ul><li>서울대학교 식품생명공학 학사</li><li>서울대학교 농생명공학 석사</li><li>서울대학교 농생명공학 박사</li></ul>';
+    if(detailBlocks[1])detailBlocks[1].innerHTML='<h2>Experience</h2><ul><li><span>2025.03–현재</span> 전남대학교 식품공학과 조교수</li><li><span>2023.08–2025.02</span> 한국식품연구원 스마트제조연구단 박사후연구원</li><li><span>2021.09–2023.07</span> 서울대학교 Food Bio Convergence Institute 선임연구원 / 연구교수</li><li><span>2021.08–2022.08</span> 연세대학교 식품영양학과 객원교수</li><li><span>2019.03–2021.02</span> 성신여자대학교 바이오식품공학과 강사</li></ul>';
   }else if(page==='photos.html'){
     removeOne('.activities-page-hero .eyebrow');
     setText('.activities-page-hero h1','Activities');
@@ -89,9 +89,26 @@ function normalizeEnglishUI(){
 
 async function getJSON(path){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw new Error(`${path} (${r.status})`);return r.json();}
 function asItems(v){return Array.isArray(v)?v:(v&&Array.isArray(v.items)?v.items:[]);}
-function showError(el){if(el)el.innerHTML='<div class="data-error">Unable to load data. Please try again shortly.</div>';}
-function escapeHTML(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function showError(el){if(el)el.innerHTML='<div class="data-error">데이터를 불러오지 못했습니다. 잠시 후 다시 확인해주세요.</div>';}
+function escapeHTML(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function lines(v=''){return escapeHTML(v).replace(/\n/g,'<br>');}
+
+async function unwrapEmbeddedImage(img){
+  const src=img?.dataset?.embeddedSvg;
+  if(!src)return;
+  try{
+    const r=await fetch(src,{cache:'no-store'});
+    if(!r.ok)throw new Error(src);
+    const text=await r.text();
+    const m=text.match(/(?:href|xlink:href)=["'](data:image\/(?:webp|jpeg|jpg|png);base64,[^"']+)["']/i);
+    if(!m)throw new Error('embedded image not found');
+    img.src=m[1];
+  }catch(e){img.src=src;}
+}
+async function hydrateEmbeddedImages(root=document){
+  const imgs=[...root.querySelectorAll('img[data-embedded-svg]')];
+  await Promise.all(imgs.map(unwrapEmbeddedImage));
+}
 
 function parsePublication(text){
   const num=(text.match(/^\[(\d+)\]/)||[,''])[1];
@@ -118,7 +135,7 @@ async function renderNotices(){
   try{
     const data=asItems(await getJSON('data/notices.json'));
     if(!data.length)return;
-    el.innerHTML=data.map(n=>`<article class="notice-row"><time>${escapeHTML(n.date||'')}</time><div class="notice-content"><h3>${escapeHTML(n.title||'')}</h3>${n.meta?`<p class="notice-meta">${escapeHTML(n.meta)}</p>`:''}${n.detail?`<p class="notice-detail">${lines(n.detail)}</p>`:''}${n.email?`<a class="notice-email" href="mailto:${escapeHTML(n.email)}">Apply / Contact · ${escapeHTML(n.email)}</a>`:''}</div></article>`).join('');
+    el.innerHTML=data.map(n=>`<article class="notice-row"><time>${escapeHTML(n.date||'')}</time><div class="notice-content"><h3>${escapeHTML(n.title||'')}</h3>${n.meta?`<p class="notice-meta">${escapeHTML(n.meta)}</p>`:''}${n.detail?`<p class="notice-detail">${lines(n.detail)}</p>`:''}${n.email?`<a class="notice-email" href="mailto:${escapeHTML(n.email)}">신청 / 문의 · ${escapeHTML(n.email)}</a>`:''}</div></article>`).join('');
   }catch(e){showError(el);}
 }
 
@@ -129,11 +146,12 @@ async function renderResearch(){
     el.innerHTML=data.map((r,i)=>{
       const summary=String(r.summary||'').trim();
       const flow=Array.isArray(r.flow)&&r.flow.length?`<div class="flow-line">${r.flow.map((x,j)=>`${j?'<i>→</i>':''}<span>${escapeHTML(typeof x==='string'?x:(x.step||''))}</span>`).join('')}</div>`:'';
-      const overview=r.overview_figure?`<figure class="research-overview-figure"><img src="${escapeHTML(r.overview_figure)}" alt="${escapeHTML(r.title)} research overview" loading="lazy"></figure>`:'';
+      const overview=r.overview_figure?`<figure class="research-overview-figure"><img data-embedded-svg="${escapeHTML(r.overview_figure)}" alt="${escapeHTML(r.title)} 연구 개요"></figure>`:'';
       const topics=(r.topics||[]).map(t=>`<article class="topic-card"><h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`).join('');
       const eng=String(r.title_en||'').trim()?`<p class="eng-title">${escapeHTML(r.title_en)}</p>`:'';
       return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2>${eng}${summary?`<p class="research-summary">${escapeHTML(summary)}</p>`:''}${flow}${overview}<div class="topic-grid">${topics}</div></div></div></section>`;
     }).join('');
+    await hydrateEmbeddedImages(el);
   }catch(e){showError(el);}
 }
 
@@ -147,7 +165,9 @@ async function renderMembers(){
     if(piEl){
       const p=data.pi,intro=String(p.intro||'').trim();
       const photo=p.photo||'assets/eunghee-kim.jpg';
-      piEl.innerHTML=`<img src="${escapeHTML(photo)}" alt="${escapeHTML(p.name_en||p.name)}" onerror="this.onerror=null;this.src='assets/eunghee-kim.jpg';"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p>${intro?`<p>${escapeHTML(intro)}</p>`:''}<div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
+      const photoAttr=/\.svg(?:$|\?)/i.test(photo)?`data-embedded-svg="${escapeHTML(photo)}"`:`src="${escapeHTML(photo)}"`;
+      piEl.innerHTML=`<img ${photoAttr} alt="${escapeHTML(p.name_en||p.name)}"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p>${intro?`<p>${escapeHTML(intro)}</p>`:''}<div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
+      await hydrateEmbeddedImages(piEl);
     }
     if(studentsEl){
       const groups={};(data.students||[]).forEach(s=>(groups[s.course]||=[]).push(s));
@@ -161,7 +181,7 @@ async function renderProjects(){
   try{
     const rank={'Current':0,'Upcoming':1,'Completed':2,'수행 중':0,'예정':1,'완료':2};
     const data=asItems(await getJSON('data/projects.json')).sort((a,b)=>(rank[a.status]??9)-(rank[b.status]??9));
-    el.innerHTML=data.map(p=>`<article class="project-row"><div class="project-status ${['Completed','완료'].includes(p.status)?'is-past':''}">${escapeHTML(p.status||'')}</div><div class="project-main"><p class="project-program">${escapeHTML(p.program||'Research Project')}</p><h3>${escapeHTML(p.title)}</h3>${p.detail?`<p class="project-detail">${escapeHTML(p.detail)}</p>`:''}</div><dl class="project-meta"><div><dt>Period</dt><dd>${escapeHTML(p.period||'—')}</dd></div><div><dt>Role</dt><dd>${escapeHTML(p.role||'—')}</dd></div></dl></article>`).join('');
+    el.innerHTML=data.map(p=>`<article class="project-row"><div class="project-status ${['Completed','완료'].includes(p.status)?'is-past':''}">${escapeHTML(p.status||'')}</div><div class="project-main"><p class="project-program">${escapeHTML(p.program||'연구과제')}</p><h3>${escapeHTML(p.title)}</h3>${p.detail?`<p class="project-detail">${escapeHTML(p.detail)}</p>`:''}</div><dl class="project-meta"><div><dt>기간</dt><dd>${escapeHTML(p.period||'—')}</dd></div><div><dt>역할</dt><dd>${escapeHTML(p.role||'—')}</dd></div></dl></article>`).join('');
   }catch(e){showError(el);}
 }
 
@@ -180,14 +200,14 @@ async function renderActivityDetail(){
     const id=new URLSearchParams(location.search).get('id')||'';
     let item=data.find(a=>String(a.id)===id);
     if(!item&&/^\d+$/.test(id))item=data[Number(id)];
-    if(!item){el.innerHTML='<p class="data-error">Activity not found.</p>';return;}
-    el.innerHTML=`<article class="activity-detail"><a class="activity-back" href="photos.html">← Back to Activities</a><img class="activity-detail-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}"><div class="activity-detail-copy"><p class="eyebrow">${escapeHTML(item.type||'Activity')}</p><h2>${escapeHTML(item.title)}</h2><dl class="activity-detail-meta"><div><dt>Period</dt><dd>${escapeHTML(item.date||'—')}</dd></div>${item.location?`<div><dt>Location</dt><dd>${escapeHTML(item.location)}</dd></div>`:''}</dl>${item.detail?`<div class="activity-detail-body"><h3>Details</h3><p>${lines(item.detail)}</p></div>`:''}</div></article>`;
+    if(!item){el.innerHTML='<p class="data-error">해당 활동을 찾을 수 없습니다.</p>';return;}
+    el.innerHTML=`<article class="activity-detail"><a class="activity-back" href="photos.html">← Activities</a><img class="activity-detail-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}"><div class="activity-detail-copy"><p class="eyebrow">${escapeHTML(item.type||'연구실 활동')}</p><h2>${escapeHTML(item.title)}</h2><dl class="activity-detail-meta"><div><dt>기간</dt><dd>${escapeHTML(item.date||'—')}</dd></div>${item.location?`<div><dt>장소</dt><dd>${escapeHTML(item.location)}</dd></div>`:''}</dl>${item.detail?`<div class="activity-detail-body"><h3>내용</h3><p>${lines(item.detail)}</p></div>`:''}</div></article>`;
   }catch(e){showError(el);}
 }
 
 async function renderAllPublications(){
   const el=document.querySelector('[data-publications]');if(!el)return;
-  const search=document.querySelector('#publication-search'),year=document.querySelector('#publication-year'),count=document.querySelector('#publication-count');
+  const search=document.querySelector('#publication-search'),year=document.querySelector('#publication-year');
   try{
     const data=asItems(await getJSON('data/publications.json')).map(x=>parsePublication(typeof x==='string'?x:(x.entry||'')));
     const years=[...new Set(data.map(x=>x.year).filter(Boolean))];
@@ -197,13 +217,12 @@ async function renderAllPublications(){
       const filtered=data.filter(p=>(y==='all'||p.year===y)&&(!q||p.raw.toLowerCase().includes(q))),groups={};
       filtered.forEach(p=>(groups[p.year||'Other']||=[]).push(p));
       el.innerHTML=Object.entries(groups).map(([yr,items])=>`<section class="publication-year"><h2>${escapeHTML(yr)}</h2><div>${items.map(p=>`<article class="publication"><span class="pub-number">${escapeHTML(p.num.padStart(2,'0'))}</span><div><h3>${escapeHTML(p.title)}</h3><p class="authors">${escapeHTML(p.authors)}</p><p class="journal">${escapeHTML(p.journal)}</p></div></article>`).join('')}</div></section>`).join('');
-      if(count)count.textContent=`${filtered.length} papers`;
     };
     search?.addEventListener('input',draw);year?.addEventListener('change',draw);draw();
   }catch(e){showError(el);}
 }
 
-normalizeEnglishUI();
+normalizeUI();
 renderLatestPublications();
 renderNotices();
 renderResearch();
