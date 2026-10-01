@@ -2,11 +2,11 @@
   "pi": {
     "name":"김웅희",
     "name_en":"Eunghee Kim",
-    "role":"Assistant Professor · Department of Food Science and Technology, Chonnam National University",
+    "role":"조교수 · 전남대학교 식품공학과",
     "email":"ehkim88@jnu.ac.kr",
     "phone":"062-530-2147",
-    "office":"Agricultural Building 3, Room 110",
-    "photo":"assets/eunghee-kim-current.svg",
+    "office":"농업생명과학대학 3호관 110호",
+    "photo":"assets/eunghee-kim-current-v4.svg",
     "intro":""
   },
   "students": [
