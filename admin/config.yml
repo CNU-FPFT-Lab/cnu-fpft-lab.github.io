@@ -24,7 +24,6 @@ collections:
       - label: "논문 목록"
         name: "publication_list"
         file: "data/publications.json"
-        format: json
         fields:
           - label: "논문"
             name: "items"
@@ -46,7 +45,6 @@ collections:
       - label: "활동 목록"
         name: "activity_list"
         file: "data/activities.json"
-        format: json
         fields:
           - label: "활동"
             name: "items"
@@ -70,7 +68,6 @@ collections:
       - label: "구성원 목록"
         name: "member_list"
         file: "data/members.json"
-        format: json
         fields:
           - label: "연구책임자"
             name: "pi"
@@ -107,7 +104,6 @@ collections:
       - label: "연구과제 목록"
         name: "project_list"
         file: "data/projects.json"
-        format: json
         fields:
           - label: "연구과제"
             name: "items"
@@ -125,14 +121,13 @@ collections:
 
   - label: "연구분야"
     name: "research"
-    description: "홈페이지 Research 페이지의 두 연구축과 세부 주제를 관리합니다."
+    description: "Research 페이지의 두 연구축과 세부 주제를 관리합니다."
     editor:
       preview: false
     files:
       - label: "연구분야"
         name: "research_list"
         file: "data/research.json"
-        format: json
         fields:
           - label: "연구축"
             name: "items"
