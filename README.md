@@ -16,7 +16,24 @@
 - 연구실 활동
 - 문의·오시는 길
 
-## 학생이 수정할 때 가장 먼저 볼 파일
+## 관리자 편집 화면
+
+일상적인 콘텐츠 업데이트는 아래 관리자 UI를 사용하는 것을 권장합니다.
+
+**Admin:** https://cnu-fpft-lab.github.io/admin/
+
+관리 화면에서 다음 항목을 웹 폼으로 수정할 수 있습니다.
+
+- 논문 추가·수정·삭제 및 순서 변경
+- 학회·수상·연구실 활동 추가
+- 활동 사진 업로드
+- 구성원 추가·수정 및 프로필 사진 업로드
+- 연구과제 추가·수정
+- 연구분야와 세부 주제 수정
+
+관리 화면은 Decap CMS + Decap Turbo를 사용합니다. 최초 1회 Turbo Site 연결 후 `admin/config.yml`의 `turbo_site_id`만 실제 Site ID로 교체하면 됩니다.
+
+## 콘텐츠 데이터
 
 자주 바뀌는 내용은 HTML과 분리해 `data/` 폴더의 JSON 파일에서 관리합니다.
 
@@ -28,7 +45,11 @@
 | 구성원 이름·과정·이메일 | `data/members.json` |
 | 학회·수상·연구실 활동 | `data/activities.json` |
 
-JSON 파일을 수정한 뒤 저장하고 commit하면 페이지가 자동으로 해당 데이터를 읽습니다. 별도의 빌드 명령은 필요하지 않습니다.
+관리자 UI에서 저장하면 위 파일이 자동으로 commit되고 GitHub Pages가 변경 내용을 반영합니다. 별도의 빌드 명령은 필요하지 않습니다.
+
+## 이미지 관리
+
+관리자 UI에서 업로드한 이미지는 기본적으로 `assets/uploads/`에 저장됩니다. 기존 연구실 사진은 `assets/`에 유지합니다.
 
 ## 디자인·페이지 수정
 
@@ -42,21 +63,6 @@ JSON 파일을 수정한 뒤 저장하고 commit하면 페이지가 자동으로
 | 연구성과 | `publications.html` |
 | 연구실 활동 | `photos.html` |
 | 문의·오시는 길 | `contact.html` |
-
-## 이미지 관리
-
-연구실 사진은 `assets/` 폴더에 넣고 `data/activities.json`의 `image` 값을 해당 경로로 바꿉니다.
-
-예:
-
-```json
-{
-  "date": "2026.10.01",
-  "title": "행사명",
-  "type": "학회 · 발표",
-  "image": "assets/example.jpg"
-}
-```
 
 ## 전남대학교 UI
 
