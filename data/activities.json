@@ -4,7 +4,7 @@
       "id":"gyeongju-2026",
       "date":"2026.07.22–24",
       "title":"한국식품저장유통학회 · 경주",
-      "type":"Conference · Award",
+      "type":"학회 · 수상",
       "location":"경주",
       "detail":"한국식품저장유통학회 참가 및 캡스톤디자인 대상 수상.",
       "image":"assets/conference-gyeongju-2026.jpg"
@@ -13,7 +13,7 @@
       "id":"daejeon-2026",
       "date":"2026.07.01–03",
       "title":"한국식품과학회 · 대전",
-      "type":"Conference · Poster Presentation · Award",
+      "type":"학회 · 포스터 발표 · 수상",
       "location":"대전",
       "detail":"한국식품과학회 참가, 포스터 발표 및 우수포스터상 수상.",
       "image":"assets/conference-daejeon-2026.jpg"
@@ -21,8 +21,8 @@
     {
       "id":"spring-2026",
       "date":"2026.04.01",
-      "title":"Spring at FPFT Lab",
-      "type":"Lab Activity",
+      "title":"봄 단체사진",
+      "type":"연구실 활동",
       "location":"전남대학교",
       "detail":"FPFT Lab 연구실 단체사진.",
       "image":"assets/lab-spring-2026.jpg"
@@ -30,8 +30,8 @@
     {
       "id":"hiking-2026",
       "date":"2026.02.23",
-      "title":"Lab Hiking",
-      "type":"Lab Activity",
+      "title":"연구실 등산",
+      "type":"연구실 활동",
       "location":"",
       "detail":"연구실 구성원 활동.",
       "image":"assets/lab-hiking-2026.jpg"
