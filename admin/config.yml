@@ -2,7 +2,7 @@ backend:
   name: github
   repo: CNU-FPFT-Lab/cnu-fpft-lab.github.io
   branch: main
-  base_url: REPLACE_WITH_OAUTH_WORKER_URL
+  base_url: https://cnu-fpft-decap-oauth.dkrnd2-e8e.workers.dev
   auth_endpoint: auth
   site_domain: cnu-fpft-lab.github.io
 
