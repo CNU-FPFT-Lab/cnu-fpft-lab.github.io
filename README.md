@@ -1,37 +1,76 @@
 # CNU FPFT Lab website
 
-전남대학교 식품가공 및 푸드테크연구실 홈페이지입니다.
+전남대학교 식품가공 및 푸드테크 연구실 홈페이지입니다.
 
 **Website:** https://cnu-fpft-lab.github.io/
 
-## 구성
+## 사이트 구조
 
-Home, Research, Members, Publications, Education, Photos, Contact의 7개 페이지입니다. 기존 Google Sites에서 교수·구성원 6명·논문 19편·활동 사진 4장·연락처를 선별하고, 소개와 연구 내용은 네 연구축 중심으로 새롭게 구성했습니다.
+- 홈
+- 연구
+- 구성원
+- 연구성과
+  - 논문
+  - 연구과제
+  - 특허·기술이전
+- 연구실 활동
+- 문의·오시는 길
 
-## 수정 방법
+## 학생이 수정할 때 가장 먼저 볼 파일
 
-Python 3만 필요하며, 생성된 HTML이 저장소에 포함되어 있습니다.
-
-```sh
-python3 scripts/build.py
-python3 -m http.server 8000
-```
-
-브라우저에서 http://localhost:8000 을 엽니다.
+자주 바뀌는 내용은 HTML과 분리해 `data/` 폴더의 JSON 파일에서 관리합니다.
 
 | 수정 대상 | 파일 |
 | --- | --- |
-| 공통 레이아웃·페이지 본문 | scripts/build.py |
-| 논문 서지정보 | data/publications.json |
-| 공통 디자인 | assets/style.css |
-| 개별 페이지 디자인 | assets/pages.css |
-| 모바일 메뉴·연도 필터 | assets/main.js |
-| 사진 | assets/*.jpg |
+| 연구분야·현재 연구주제 | `data/research.json` |
+| 현재 수행 연구과제 | `data/projects.json` |
+| 논문 목록 | `data/publications.json` |
+| 구성원 이름·과정·이메일 | `data/members.json` |
+| 학회·수상·연구실 활동 | `data/activities.json` |
 
-수정 후 생성 스크립트를 실행하고 변경된 HTML도 함께 커밋합니다. GitHub Pages는 main의 루트 디렉터리를 게시합니다. 외부 JavaScript 라이브러리, 방문자 추적 코드, 비밀키는 사용하지 않습니다.
+JSON 파일을 수정한 뒤 저장하고 commit하면 페이지가 자동으로 해당 데이터를 읽습니다. 별도의 빌드 명령은 필요하지 않습니다.
 
-## 연구 코드 공유
+## 디자인·페이지 수정
 
-홈페이지는 연구실 소개를 담당합니다. 연구 코드는 각 연구의 별도 저장소에서 실행 방법·의존성·라이선스와 함께 관리한 뒤 관련 페이지에서 연결할 수 있습니다. 아직 공개되지 않은 코드나 데이터 링크를 생성하지 않습니다.
+| 수정 대상 | 파일 |
+| --- | --- |
+| 전체 색상·레이아웃·반응형 디자인 | `assets/site.css` |
+| 데이터 표시·검색·모바일 메뉴 | `assets/main.js` |
+| 홈 | `index.html` |
+| 연구 | `research.html` |
+| 구성원 | `members.html` |
+| 연구성과 | `publications.html` |
+| 연구실 활동 | `photos.html` |
+| 문의·오시는 길 | `contact.html` |
 
-출처와 편집 범위는 CONTENT_SOURCES.md를 참고하세요.
+## 이미지 관리
+
+연구실 사진은 `assets/` 폴더에 넣고 `data/activities.json`의 `image` 값을 해당 경로로 바꿉니다.
+
+예:
+
+```json
+{
+  "date": "2026.10.01",
+  "title": "행사명",
+  "type": "학회 · 발표",
+  "image": "assets/example.jpg"
+}
+```
+
+## 전남대학교 UI
+
+헤더에는 전남대학교 공식 UI 자료에 공개된 원형 심볼을 사용합니다. 사이트 기본색은 전남대학교 UI의 녹색을 중심으로 구성하고, 보조색으로 청색을 사용합니다.
+
+## 배포
+
+GitHub Pages가 `main` 브랜치의 루트 파일을 직접 게시합니다. 따라서 수정 후 별도의 생성 스크립트를 실행할 필요가 없습니다.
+
+```sh
+git pull
+git add .
+git commit -m "홈페이지 수정"
+git push
+```
+
+GitHub 웹 편집기에서 직접 수정하고 **Commit changes**를 눌러도 동일하게 배포됩니다.
