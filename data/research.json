@@ -3,23 +3,24 @@
     {
       "id": "processing",
       "number": "01",
-      "title": "식품가공",
-      "title_en": "Food Processing",
+      "title": "Food Processing",
+      "title_en": "Food Processing & Quality Engineering",
       "summary": "",
+      "overview_figure": "assets/research-processing-overview.svg",
       "flow": [],
       "topics": [
         {
-          "title": "재수화형 파스타",
+          "title": "Rehydratable Pasta",
           "detail": "공정 · 구조 · 재수화 · 물성",
           "figure": ""
         },
         {
-          "title": "올레오겔 기반 식품 시스템",
+          "title": "Oleogel-based Food Systems",
           "detail": "구조화 · 안정성 · 분산 · 유변학",
           "figure": ""
         },
         {
-          "title": "김치 기반 소스",
+          "title": "Kimchi-based Sauce",
           "detail": "공정설계 · 유동성 · 저장안정성 · 제품품질",
           "figure": ""
         }
@@ -28,28 +29,24 @@
     {
       "id": "foodtech",
       "number": "02",
-      "title": "푸드테크",
+      "title": "FoodTech",
       "title_en": "FoodTech & Data-driven Quality Assessment",
       "summary": "센싱과 계측을 통해 식품의 변화를 데이터로 변환하고, 통계·머신러닝·AI를 필요에 따라 활용하여 품질정보를 도출합니다.",
-      "flow": [
-        "식품 시료",
-        "측정·센싱",
-        "식품 데이터",
-        "품질정보"
-      ],
+      "overview_figure": "assets/research-foodtech-overview.svg",
+      "flow": [],
       "topics": [
         {
-          "title": "물성·유변학 데이터 분석",
+          "title": "Texture & Rheology Data Analysis",
           "detail": "곡선 · 특성값 · 전체 신호",
           "figure": ""
         },
         {
-          "title": "저비용 향 센싱",
+          "title": "Low-cost Aroma Sensing",
           "detail": "BME688 · 센서 시계열 · 품질분류",
           "figure": ""
         },
         {
-          "title": "초분광 식품 품질분석",
+          "title": "Hyperspectral Food Quality Analysis",
           "detail": "HSI / RGB · 비파괴 평가",
           "figure": ""
         }
