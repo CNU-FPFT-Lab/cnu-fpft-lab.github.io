@@ -41,7 +41,7 @@ collections:
 
   - label: "연구실 활동·사진"
     name: "activities"
-    description: "학회, 수상, 연구실 활동과 사진을 관리합니다. 사진은 업로드 버튼으로 추가할 수 있습니다."
+    description: "목록에는 사진과 제목만 표시되며, 클릭 후 상세 페이지에서 기간·장소·설명을 보여줍니다."
     editor:
       preview: false
     files:
@@ -57,9 +57,12 @@ collections:
             summary: "{{fields.date}} · {{fields.title}}"
             label_singular: "활동 추가"
             fields:
-              - {label: "날짜", name: "date", widget: "string", hint: "예: 2026.10.01 또는 2026.07.22–24"}
+              - {label: "ID", name: "id", widget: "string", hint: "영문 소문자와 하이픈 권장. 예: conference-busan-2027"}
+              - {label: "기간·날짜", name: "date", widget: "string", hint: "예: 2026.10.01 또는 2026.07.22–24"}
               - {label: "제목", name: "title", widget: "string"}
-              - {label: "분류·설명", name: "type", widget: "string", hint: "예: 학회 · 포스터 발표 / 수상 / 연구실 활동"}
+              - {label: "분류", name: "type", widget: "string", required: false, hint: "예: Conference · Award / Lab Activity"}
+              - {label: "장소", name: "location", widget: "string", required: false}
+              - {label: "세부 설명", name: "detail", widget: "text", required: false}
               - {label: "사진", name: "image", widget: "image", choose_url: false}
 
   - label: "구성원"
@@ -124,7 +127,7 @@ collections:
 
   - label: "연구분야"
     name: "research"
-    description: "Research 페이지의 두 연구축과 세부 주제를 관리합니다."
+    description: "Research 페이지의 연구분야와 세부 주제를 관리합니다."
     editor:
       preview: false
     files:
@@ -132,7 +135,7 @@ collections:
         name: "research_list"
         file: "data/research.json"
         fields:
-          - label: "연구축"
+          - label: "연구분야"
             name: "items"
             widget: "list"
             collapsed: true
@@ -140,9 +143,10 @@ collections:
             fields:
               - {label: "ID", name: "id", widget: "string", hint: "URL 식별자. 기존 값은 가능하면 변경하지 마세요."}
               - {label: "번호", name: "number", widget: "string"}
-              - {label: "한글 제목", name: "title", widget: "string"}
-              - {label: "영문 제목", name: "title_en", widget: "string"}
+              - {label: "제목", name: "title", widget: "string"}
+              - {label: "보조 제목", name: "title_en", widget: "string"}
               - {label: "설명", name: "summary", widget: "text", required: false}
+              - {label: "Research Overview Figure", name: "overview_figure", widget: "image", required: false, choose_url: false, hint: "연구분야 설명 영역에 표시되는 대표 인포그래픽"}
               - label: "연구 흐름"
                 name: "flow"
                 widget: "list"
