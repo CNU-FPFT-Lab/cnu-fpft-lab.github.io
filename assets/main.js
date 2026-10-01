@@ -23,6 +23,7 @@ document.querySelectorAll('.nav-group > button').forEach(btn=>btn.addEventListen
 document.querySelectorAll('.site-brand-logo').forEach(img=>img.src=CNU_LOGO);
 
 function setText(selector,text){const el=document.querySelector(selector);if(el)el.textContent=text;}
+function removeOne(selector){document.querySelector(selector)?.remove();}
 function normalizeKoreanUI(){
   if(button&&button.getAttribute('aria-expanded')!=='true')button.textContent='메뉴';
   document.querySelectorAll('.nav > a').forEach(a=>{
@@ -47,13 +48,18 @@ function normalizeKoreanUI(){
   document.querySelectorAll('.site-footer a[href="contact.html"]').forEach(el=>el.textContent='문의·오시는 길 →');
 
   if(page==='members.html'){
+    removeOne('.page-hero .eyebrow');
+    removeOne('.student-section .section-head .eyebrow');
     setText('.page-hero h1','구성원');
     setText('.student-section .section-head h2','대학원생');
   }else if(page==='photos.html'){
+    removeOne('.activities-page-hero .eyebrow');
     setText('.activities-page-hero h1','연구실 활동');
   }else if(page==='activity.html'){
+    removeOne('.page-hero .eyebrow');
     setText('.page-hero h1','연구실 활동');
   }else if(page==='contact.html'){
+    removeOne('.page-hero .eyebrow');
     setText('.page-hero h1','문의·오시는 길');
   }
 }
