@@ -16,6 +16,11 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+// The file remains photos.html for backward-compatible links, while the site label is Activities.
+document.querySelectorAll('a[href="photos.html"]').forEach(link => {
+  if (link.closest('#navigation')) link.textContent = 'Activities';
+});
+
 const yearFilter = document.querySelector('#publication-year');
 yearFilter?.addEventListener('change', () => {
   let count = 0;
