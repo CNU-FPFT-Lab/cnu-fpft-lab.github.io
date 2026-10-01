@@ -1,28 +1,28 @@
 {
   "items": [
     {
-      "status":"Current",
-      "program":"National Research Foundation of Korea",
-      "title":"Deep learning analysis of raw physical-property curves for interpreting structural and textural changes in rehydratable foods",
+      "status":"수행 중",
+      "program":"한국연구재단",
+      "title":"재수화 식품의 구조-텍스처 변화 해석을 위한 물성 raw curve 기반 딥러닝 적용 연구",
       "period":"2026.09–2027.08",
-      "role":"Principal Investigator",
+      "role":"연구책임자",
       "detail":""
     },
     {
-      "status":"Current",
-      "program":"World Institute of Kimchi",
-      "title":"Development of an integrated quality-control system for intelligent kimchi manufacturing using Physical AI, automation, and multimodal sensing",
+      "status":"수행 중",
+      "program":"세계김치연구소",
+      "title":"김치 제조 공정 지능화를 위한 Physical AI 기반 자동화 및 멀티모달 센싱 통합 품질 제어 시스템 개발",
       "period":"2026.04–2030.12",
-      "role":"Co-Investigator",
+      "role":"공동연구원",
       "detail":""
     },
     {
-      "status":"Current",
-      "program":"Chonnam National University Anchor Project",
-      "title":"Development and technology transfer of kimchi spread products",
+      "status":"수행 중",
+      "program":"전남대학교 앵커사업",
+      "title":"김치 스프레드 제품 개발 및 기술이전",
       "period":"2026.07–2027.01",
-      "role":"Principal Investigator",
-      "detail":"Industry partner: Bitgoeul Kimchi"
+      "role":"연구책임자",
+      "detail":"수요기업: 빛고을김치"
     }
   ]
 }
