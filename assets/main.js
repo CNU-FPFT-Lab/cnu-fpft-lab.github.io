@@ -24,6 +24,7 @@ document.querySelectorAll('a[href$="#patents"]').forEach(a=>a.remove());
 document.querySelectorAll('.site-brand-logo').forEach(img=>img.src=CNU_LOGO);
 
 function setText(selector,text){const el=document.querySelector(selector);if(el)el.textContent=text;}
+function removeOne(selector){document.querySelector(selector)?.remove();}
 function translateInterface(){
   if(button&&button.getAttribute('aria-expanded')!=='true') button.textContent='Menu';
   document.querySelectorAll('.nav > a').forEach(a=>{
@@ -35,17 +36,17 @@ function translateInterface(){
   });
   const groups=document.querySelectorAll('.nav-group');
   if(groups[0]) groups[0].querySelector(':scope > button').textContent='Members';
-  if(groups[1]) groups[1].querySelector(':scope > button').textContent='Publications';
+  if(groups[1]) groups[1].querySelector(':scope > button').textContent='Achievements';
   document.querySelectorAll('.nav-sub a').forEach(a=>{
     const href=a.getAttribute('href')||'';
     if(href.endsWith('#pi')) a.textContent='Principal Investigator';
     else if(href.endsWith('#students')) a.textContent='Graduate Students';
-    else if(href.endsWith('#papers')) a.textContent='Papers';
-    else if(href.endsWith('#projects')) a.textContent='Projects';
+    else if(href.endsWith('#papers')) a.textContent='Publications';
+    else if(href.endsWith('#projects')) a.textContent='Research Projects';
   });
 
   if(page==='index.html'){
-    setText('.home-notice-section .section-head .eyebrow','Updates');
+    removeOne('.home-notice-section .section-head .eyebrow');
     setText('.home-notice-section .section-head h2','Notice');
     setText('.home-research-section .section-head .eyebrow','Research Areas');
     const previews=document.querySelectorAll('.research-preview h3');
@@ -55,37 +56,37 @@ function translateInterface(){
     if(researchMore) researchMore.textContent='View Research →';
     const lastSection=document.querySelector('main > section.soft');
     if(lastSection){
-      const eyebrow=lastSection.querySelector('.eyebrow'); if(eyebrow) eyebrow.textContent='Research Outputs';
+      lastSection.querySelector('.eyebrow')?.remove();
       const h2=lastSection.querySelector('h2'); if(h2) h2.textContent='Recent Publications';
-      const more=lastSection.querySelector('.more-link'); if(more) more.textContent='View all publications →';
+      const more=lastSection.querySelector('.more-link'); if(more) more.textContent='View Achievements →';
     }
   }else if(page==='research.html'){
-    setText('.research-page-hero .eyebrow','Research');
+    removeOne('.research-page-hero .eyebrow');
     setText('.research-page-hero h1','Research');
   }else if(page==='members.html'){
-    setText('.page-hero .eyebrow','People');
+    removeOne('.page-hero .eyebrow');
     setText('.page-hero h1','Members');
     const detailHeads=document.querySelectorAll('.profile-details h2');
     if(detailHeads[0]) detailHeads[0].textContent='Education';
     if(detailHeads[1]) detailHeads[1].textContent='Experience';
-    setText('.student-section .section-head .eyebrow','Students');
+    removeOne('.student-section .section-head .eyebrow');
     setText('.student-section .section-head h2','Graduate Students');
   }else if(page==='publications.html'){
-    setText('.page-hero .eyebrow','Research Outputs');
-    setText('.page-hero h1','Publications');
+    removeOne('.page-hero .eyebrow');
+    setText('.page-hero h1','Achievements');
     const tabs=document.querySelectorAll('.output-tabs a');
-    if(tabs[0]) tabs[0].textContent='Papers';
-    if(tabs[1]) tabs[1].textContent='Projects';
-    setText('#papers .section-head .eyebrow','01 / Papers');
-    setText('#papers .section-head h2','Papers');
-    setText('#projects .section-head .eyebrow','02 / Projects');
+    if(tabs[0]) tabs[0].textContent='Publications';
+    if(tabs[1]) tabs[1].textContent='Research Projects';
+    removeOne('#papers .section-head .eyebrow');
+    setText('#papers .section-head h2','Publications');
+    removeOne('#projects .section-head .eyebrow');
     setText('#projects .section-head h2','Research Projects');
     const search=document.querySelector('#publication-search'); if(search) search.placeholder='Search title · author · journal';
   }else if(page==='photos.html'){
-    setText('.activities-page-hero .eyebrow','Activities');
+    removeOne('.activities-page-hero .eyebrow');
     setText('.activities-page-hero h1','Photos');
   }else if(page==='contact.html'){
-    setText('.page-hero .eyebrow','Contact');
+    removeOne('.page-hero .eyebrow');
     setText('.page-hero h1','Contact');
     const cards=document.querySelectorAll('.contact-card .eyebrow');
     if(cards[0]) cards[0].textContent='Contact';
@@ -118,7 +119,7 @@ async function renderLatestPublications(){
   const el=document.querySelector('[data-latest-publications]');if(!el)return;
   try{
     const data=asItems(await getJSON('data/publications.json'));
-    el.innerHTML=data.slice(0,3).map(item=>{const p=parsePublication(item);return `<article class="pub-row"><div class="pub-year">${escapeHTML(p.year)}</div><div><h3 class="pub-title">${escapeHTML(p.title)}</h3><p class="pub-authors">${escapeHTML(p.authors)}</p></div><div class="pub-journal">${escapeHTML(p.journal)}</div></article>`;}).join('');
+    el.innerHTML=data.slice(0,3).map(item=>{const p=parsePublication(typeof item==='string'?item:(item.entry||''));return `<article class="pub-row"><div class="pub-year">${escapeHTML(p.year)}</div><div><h3 class="pub-title">${escapeHTML(p.title)}</h3><p class="pub-authors">${escapeHTML(p.authors)}</p></div><div class="pub-journal">${escapeHTML(p.journal)}</div></article>`;}).join('');
   }catch(e){showError(el);}
 }
 
@@ -143,7 +144,8 @@ async function renderResearch(){
         const figure=t.figure?`<div class="topic-figure"><img src="${escapeHTML(t.figure)}" alt="${escapeHTML(t.title)} research figure" loading="lazy"></div>`:'';
         return `<article class="topic-card">${figure}<h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`;
       }).join('');
-      return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2><p class="eng-title">${escapeHTML(r.title_en)}</p>${summary?`<p class="research-summary">${escapeHTML(summary)}</p>`:''}${flow}${overview}<div class="topic-grid">${topics}</div></div></div></section>`;
+      const eng=String(r.title_en||'').trim()?`<p class="eng-title">${escapeHTML(r.title_en)}</p>`:'';
+      return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2>${eng}${summary?`<p class="research-summary">${escapeHTML(summary)}</p>`:''}${flow}${overview}<div class="topic-grid">${topics}</div></div></div></section>`;
     }).join('');
   }catch(e){showError(el);}
 }
