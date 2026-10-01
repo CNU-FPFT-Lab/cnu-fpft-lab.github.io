@@ -4,6 +4,7 @@ const button=document.querySelector('.menu-button'),nav=document.querySelector('
 button?.addEventListener('click',()=>{const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));nav?.classList.toggle('open',open);button.textContent=open?'닫기':'메뉴'});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&button?.getAttribute('aria-expanded')==='true'){nav?.classList.remove('open');button.setAttribute('aria-expanded','false');button.textContent='메뉴';button.focus()}});
 document.querySelectorAll('.nav-group > button').forEach(btn=>btn.addEventListener('click',()=>btn.parentElement.classList.toggle('open')));
+document.querySelectorAll('a[href$="#patents"]').forEach(a=>a.remove());
 document.querySelectorAll('.site-brand-logo').forEach(img=>img.src=CNU_LOGO);
 async function getJSON(path){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw new Error(`${path} (${r.status})`);return r.json()}
 function asItems(v){return Array.isArray(v)?v:(v&&Array.isArray(v.items)?v.items:[])}
