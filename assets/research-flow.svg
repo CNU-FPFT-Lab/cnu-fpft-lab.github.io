@@ -1,9 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 360" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 250" role="img" aria-labelledby="title desc">
   <title id="title">FPFT Lab research workflow</title>
-  <desc id="desc">가공에서 측정, 데이터, 품질정보로 이어지는 연구 흐름</desc>
-  <rect width="1600" height="360" rx="28" fill="#f7f9f8"/>
-  <g font-family="Arial, 'Noto Sans KR', sans-serif">
-    <g transform="translate(55 55)">
-      <rect width="320" height="250" rx="24" fill="#fff7ef" stroke="#f0c29b" stroke-width="2"/>
-      <circle cx="52" cy="52" r="27" fill="#f08a24"/>
-      <path d="M38
+  <desc id="desc">가공, 측정, 데이터, 품질정보로 이어지는 연구 흐름</desc>
+  <rect width="1600" height="250" rx="28" fill="#f7f9f8"/>
+  <g font-family="Arial, 'Noto Sans KR', sans-serif" text-anchor="middle">
+    <g transform="translate(60 45)">
+      <rect width="310" height="160" rx="24" fill="#fff" stroke="#dce4df" stroke-width="2"/>
+      <text x="155" y="76" font-size="34" font-weight="700" fill="#17221c">가공</text>
+      <text x="155" y="116" font-size="19" fill="#66736c">Processing</text>
+    </g>
+    <path d="M395 125H440" stroke="#007a33" stroke-width="5" stroke-linecap="round"/><path d="M432 113l14 12-14 12" fill="none" stroke="#007a33" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(465 45)">
+      <rect width="310" height="160" rx="24" fill="#fff" stroke="#dce4df" stroke-width="2"/>
+      <text x="155" y="76" font-size="34" font-weight="700" fill="#17221c">측정</text>
+      <text x="155" y="116" font-size="19" fill="#66736c">Measurement</text>
+    </g>
+    <path d="M800 125H845" stroke="#007a33" stroke-width="5" stroke-linecap="round"/><path d="M837 113l14 12-14 12" fill="none" stroke="#007a33" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(870 45)">
+      <rect width="310" height="160" rx="24" fill="#fff" stroke="#dce4df" stroke-width="2"/>
+      <text x="155" y="76" font-size="34" font-weight="700" fill="#17221c">데이터</text>
+      <text x="155" y="116" font-size="19" fill="#66736c">Data</text>
+    </g>
+    <path d="M1205 125H1250" stroke="#007a33" stroke-width="5" stroke-linecap="round"/><path d="M1242 113l14 12-14 12" fill="none" stroke="#007a33" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(1275 45)">
+      <rect width="265" height="160" rx="24" fill="#eef7f1" stroke="#9fc8ae" stroke-width="2"/>
+      <text x="132.5" y="76" font-size="34" font-weight="700" fill="#006b32">품질정보</text>
+      <text x="132.5" y="116" font-size="19" fill="#66736c">Quality Information</text>
+    </g>
+  </g>
+</svg>
