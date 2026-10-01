@@ -1,4 +1,4 @@
-/* Page roles: Home = identity, Research = detail, Publications = outputs, Education = training. */
+/* Page roles: Home = identity, Research = detail, Research Outputs = papers/projects/patents. */
 .lab-keywords{font-size:14px;letter-spacing:.02em;color:var(--teal);font-weight:600;margin:24px 0 0}
 .compact-lead{font-size:13px!important;letter-spacing:.02em;color:var(--teal)!important;font-weight:600}
 .join-terms{font-size:13px!important;letter-spacing:.015em}
@@ -57,7 +57,7 @@
 .analysis-grid h3{font-size:16px;margin:0 0 7px;font-weight:600}
 .analysis-grid p{font-size:12px;color:var(--muted);margin:0}
 
-/* Publications as research-output hub. */
+/* Research outputs hub. */
 .output-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px;padding:0;list-style:none}
 .output-nav a{display:block;padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:12px;font-weight:600;color:var(--muted)}
 .output-nav a:hover{background:#edf4ef;color:var(--teal);text-decoration:none}
@@ -66,13 +66,14 @@
 .output-section-head{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:22px}
 .output-section-head h2{font-size:32px;line-height:1.2;letter-spacing:-.035em;font-weight:500;margin:0}
 .output-section-head p{font-size:12px;color:var(--muted);margin:0}
-.output-placeholder-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.output-placeholder{border:1px solid var(--line);background:#fbfcf8;border-radius:4px;padding:26px}
-.output-placeholder small{font-size:10px;letter-spacing:.12em;color:var(--teal);font-weight:700}
-.output-placeholder h3{font-size:18px;font-weight:600;margin:8px 0 5px}
-.output-placeholder p{font-size:12px;color:var(--muted);margin:0}
+.project-record-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.project-record{border:1px solid var(--line);background:#fbfcf8;border-radius:4px;padding:24px}
+.project-record small{font-size:10px;letter-spacing:.08em;color:var(--teal);font-weight:700}
+.project-record h3{font-size:18px;line-height:1.45;font-weight:600;margin:9px 0 10px;word-break:keep-all}
+.project-record p{font-size:12px;color:var(--muted);margin:0;word-break:keep-all}
+.output-note{border-top:1px solid var(--line);padding-top:18px;font-size:13px;color:var(--muted)}
 
-/* Education */
+/* Education styles retained for archived page only. */
 .education-tracks{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
 .education-track{background:#fff;border:1px solid var(--line);border-radius:4px;padding:30px}
 .education-track h2{font-size:27px;line-height:1.25;font-weight:500;letter-spacing:-.03em;margin:7px 0 16px}
@@ -80,10 +81,10 @@
 .education-track li{margin:8px 0}
 .education-path{margin-top:20px}
 
-@media(max-width:900px){.home-explore{grid-template-columns:repeat(2,1fr)}.current-project-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.home-explore{grid-template-columns:repeat(2,1fr)}.current-project-grid,.project-record-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){
   .home-hero-simple{padding:48px 0 42px}
-  .home-theme-grid,.research-overview-grid,.education-tracks,.research-theme-layout,.analysis-grid,.output-placeholder-grid{grid-template-columns:1fr}
+  .home-theme-grid,.research-overview-grid,.education-tracks,.research-theme-layout,.analysis-grid,.project-record-grid{grid-template-columns:1fr}
   .home-flow{grid-template-columns:1fr}
   .home-flow div{border-right:0;border-bottom:1px solid var(--line)}
   .home-flow div:last-child{border-bottom:0}
