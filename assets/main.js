@@ -22,10 +22,7 @@ document.querySelectorAll('.nav-group > button').forEach(btn => {
   btn.addEventListener('click', () => btn.parentElement.classList.toggle('open'));
 });
 
-// 모든 페이지에서 확대해도 선명한 전남대학교 벡터 로고를 사용한다.
-document.querySelectorAll('.site-brand-logo').forEach(img => {
-  img.src = CNU_LOGO;
-});
+document.querySelectorAll('.site-brand-logo').forEach(img => { img.src = CNU_LOGO; });
 document.querySelectorAll('.brand').forEach(brand => {
   if (brand.querySelector('.site-brand-logo')) return;
   const mark = brand.querySelector('.brand-mark');
@@ -89,7 +86,17 @@ async function renderResearch() {
   if (!el) return;
   try {
     const data = asItems(await getJSON('data/research.json'));
-    el.innerHTML = data.map((r,i) => `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2><p class="eng-title">${escapeHTML(r.title_en)}</p><p class="research-summary">${escapeHTML(r.summary)}</p><div class="flow-line">${(r.flow||[]).map((x,j)=>`${j?'<i>→</i>':''}<span>${escapeHTML(x)}</span>`).join('')}</div><div class="topic-grid">${(r.topics||[]).map(t=>`<article class="topic-card"><h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`).join('')}</div></div></div></section>`).join('');
+    el.innerHTML = data.map((r,i) => {
+      const summary = String(r.summary || '').trim();
+      const flow = Array.isArray(r.flow) && r.flow.length ? `<div class="flow-line">${r.flow.map((x,j)=>`${j?'<i>→</i>':''}<span>${escapeHTML(x)}</span>`).join('')}</div>` : '';
+      const topics = (r.topics||[]).map(t => {
+        const figure = t.figure
+          ? `<div class="topic-figure"><img src="${escapeHTML(t.figure)}" alt="${escapeHTML(t.title)} 연구 그림" loading="lazy"></div>`
+          : `<div class="topic-figure topic-figure-empty"><span>Research figure</span></div>`;
+        return `<article class="topic-card">${figure}<h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`;
+      }).join('');
+      return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2><p class="eng-title">${escapeHTML(r.title_en)}</p>${summary?`<p class="research-summary">${escapeHTML(summary)}</p>`:''}${flow}<div class="topic-grid">${topics}</div></div></div></section>`;
+    }).join('');
   } catch (e) { showError(el); }
 }
 
@@ -111,6 +118,11 @@ async function renderActivities() {
   } catch (e) { showError(el); }
 }
 
+function fallbackStudentPhoto(name) {
+  const node = [...document.querySelectorAll('[data-student-photo]')].find(img => img.dataset.studentPhoto === name);
+  return node?.getAttribute('src') || '';
+}
+
 async function renderMembers() {
   const piEl = document.querySelector('[data-pi]');
   const studentsEl = document.querySelector('[data-students]');
@@ -119,12 +131,16 @@ async function renderMembers() {
     const data = await getJSON('data/members.json');
     if (piEl) {
       const p = data.pi;
-      piEl.innerHTML = `<img src="${escapeHTML(p.photo)}" alt="${escapeHTML(p.name)} 교수"><div><p class="eyebrow">연구책임자</p><h2>${escapeHTML(p.name)} <span>${escapeHTML(p.name_en)}</span></h2><p class="prof-role">${escapeHTML(p.role)}</p><p>${escapeHTML(p.intro)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
+      const intro = String(p.intro || '').trim();
+      piEl.innerHTML = `<img src="${escapeHTML(p.photo)}" alt="${escapeHTML(p.name)} 교수"><div><p class="eyebrow">연구책임자</p><h2>${escapeHTML(p.name)} <span>${escapeHTML(p.name_en)}</span></h2><p class="prof-role">${escapeHTML(p.role)}</p>${intro?`<p>${escapeHTML(intro)}</p>`:''}<div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
     }
     if (studentsEl) {
       const groups = {};
       (data.students||[]).forEach(s => (groups[s.course] ||= []).push(s));
-      studentsEl.innerHTML = Object.entries(groups).map(([course,items],idx)=>`${idx?`<h2 class="member-group-title">${escapeHTML(course)}</h2>`:''}<div class="student-list">${items.map(s=>`<article class="student-row">${s.photo?`<img class="student-portrait" src="${escapeHTML(s.photo)}" alt="${escapeHTML(s.name)} 프로필 사진" loading="lazy">`:`<div class="student-portrait" style="display:grid;place-items:center;color:var(--cnu-green);font-weight:800;font-size:24px">${escapeHTML(s.name.slice(0,1))}</div>`}<div class="student-info"><p class="eyebrow">${escapeHTML(course)}</p><h3>${escapeHTML(s.name)} <span>${escapeHTML(s.name_en)}</span></h3><a href="mailto:${escapeHTML(s.email)}">${escapeHTML(s.email)}</a></div></article>`).join('')}</div>`).join('');
+      studentsEl.innerHTML = Object.entries(groups).map(([course,items],idx)=>`${idx?`<h2 class="member-group-title">${escapeHTML(course)}</h2>`:''}<div class="student-list">${items.map(s=>{
+        const photo = s.photo || fallbackStudentPhoto(s.name);
+        return `<article class="student-row">${photo?`<img class="student-portrait" src="${photo}" alt="${escapeHTML(s.name)} 프로필 사진" loading="lazy">`:`<div class="student-portrait student-portrait-fallback">${escapeHTML(s.name.slice(0,1))}</div>`}<div class="student-info"><p class="eyebrow">${escapeHTML(course)}</p><h3>${escapeHTML(s.name)} <span>${escapeHTML(s.name_en)}</span></h3><a href="mailto:${escapeHTML(s.email)}">${escapeHTML(s.email)}</a></div></article>`;
+      }).join('')}</div>`).join('');
     }
   } catch (e) { showError(piEl || studentsEl); }
 }
