@@ -1,0 +1,12 @@
+name = "cnu-fpft-decap-oauth"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[vars]
+CMS_ORIGIN = "https://cnu-fpft-lab.github.io"
+GITHUB_REPO_PRIVATE = "0"
+ALLOWED_SITE_ID = ""
+# Optional allowlist. Leave empty to allow any GitHub user who has repository permission.
+# Example: ALLOWED_GITHUB_USERS = "student1,student2,professor-login"
+ALLOWED_GITHUB_USERS = ""
