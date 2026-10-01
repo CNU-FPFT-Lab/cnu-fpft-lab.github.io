@@ -2,19 +2,19 @@
   "pi": {
     "name":"김웅희",
     "name_en":"Eunghee Kim",
-    "role":"조교수 · 전남대학교 식품공학과",
+    "role":"Assistant Professor · Department of Food Science and Technology, Chonnam National University",
     "email":"ehkim88@jnu.ac.kr",
     "phone":"062-530-2147",
-    "office":"농업생명과학대학 3호관 110호",
-    "photo":"assets/eunghee-kim-new.svg",
+    "office":"Agricultural Building 3, Room 110",
+    "photo":"assets/eunghee-kim.jpg",
     "intro":""
   },
   "students": [
-    {"name":"이지민","name_en":"Jimin Lee","course":"석사 과정","email":"zimin@jnu.ac.kr"},
-    {"name":"이승학","name_en":"Seunghak Lee","course":"석사 과정","email":"shlee99@jnu.ac.kr"},
-    {"name":"주세령","name_en":"Saeryeong Ju","course":"석사 과정","email":"ju1127@jnu.ac.kr"},
-    {"name":"이수현","name_en":"Suhyeon Lee","course":"석사 과정","email":"leesuhyeon0203@gmail.com"},
-    {"name":"김성무","name_en":"Sungmoo Kim","course":"학·석사 연계과정","email":"seongmukim6@gmail.com"},
-    {"name":"김민서","name_en":"Minseo Kim","course":"학·석사 연계과정","email":"gimm84902@gmail.com"}
+    {"name":"이지민","name_en":"Jimin Lee","course":"M.S.","email":"zimin@jnu.ac.kr"},
+    {"name":"이승학","name_en":"Seunghak Lee","course":"M.S.","email":"shlee99@jnu.ac.kr"},
+    {"name":"주세령","name_en":"Saeryeong Ju","course":"M.S.","email":"ju1127@jnu.ac.kr"},
+    {"name":"이수현","name_en":"Suhyeon Lee","course":"M.S.","email":"leesuhyeon0203@gmail.com"},
+    {"name":"김성무","name_en":"Sungmoo Kim","course":"B.S.–M.S. Integrated","email":"seongmukim6@gmail.com"},
+    {"name":"김민서","name_en":"Minseo Kim","course":"B.S.–M.S. Integrated","email":"gimm84902@gmail.com"}
   ]
 }
