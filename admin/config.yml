@@ -1,0 +1,159 @@
+backend:
+  name: turbo-github
+  turbo_site_id: REPLACE_WITH_DECAP_TURBO_SITE_ID
+  branch: main
+
+locale: ko
+site_url: https://cnu-fpft-lab.github.io/
+display_url: https://cnu-fpft-lab.github.io/
+
+logo:
+  src: https://bk21eef.jnu.ac.kr/CrossEditor/binary/newimages/images/000057/20240808174546636_OU7R1HSC.png
+  show_in_header: true
+
+media_folder: assets/uploads
+public_folder: /assets/uploads
+
+collections:
+  - label: "논문"
+    name: "publications"
+    description: "논문을 추가·수정·삭제합니다. 새 논문은 목록 맨 위에 추가하세요."
+    editor:
+      preview: false
+    files:
+      - label: "논문 목록"
+        name: "publication_list"
+        file: "data/publications.json"
+        format: json
+        fields:
+          - label: "논문"
+            name: "items"
+            widget: "list"
+            add_to_top: true
+            label_singular: "논문 추가"
+            field:
+              label: "서지정보"
+              name: "entry"
+              widget: "text"
+              hint: "형식: [번호] 저자 (연도). 논문제목. 저널, 권(호), 페이지. 예: [20] Kim, E. (2026). Title. Food Chemistry, 100, 12345."
+
+  - label: "연구실 활동·사진"
+    name: "activities"
+    description: "학회, 수상, 연구실 활동과 사진을 관리합니다. 사진은 업로드 버튼으로 추가할 수 있습니다."
+    editor:
+      preview: false
+    files:
+      - label: "활동 목록"
+        name: "activity_list"
+        file: "data/activities.json"
+        format: json
+        fields:
+          - label: "활동"
+            name: "items"
+            widget: "list"
+            add_to_top: true
+            collapsed: true
+            summary: "{{fields.date}} · {{fields.title}}"
+            label_singular: "활동 추가"
+            fields:
+              - {label: "날짜", name: "date", widget: "string", hint: "예: 2026.10.01 또는 2026.07.22–24"}
+              - {label: "제목", name: "title", widget: "string"}
+              - {label: "분류·설명", name: "type", widget: "string", hint: "예: 학회 · 포스터 발표 / 수상 / 연구실 활동"}
+              - {label: "사진", name: "image", widget: "image", choose_url: false}
+
+  - label: "구성원"
+    name: "members"
+    description: "연구책임자와 학생 정보를 관리합니다. 학생 사진은 선택사항입니다."
+    editor:
+      preview: false
+    files:
+      - label: "구성원 목록"
+        name: "member_list"
+        file: "data/members.json"
+        format: json
+        fields:
+          - label: "연구책임자"
+            name: "pi"
+            widget: "object"
+            collapsed: true
+            fields:
+              - {label: "이름", name: "name", widget: "string"}
+              - {label: "영문명", name: "name_en", widget: "string"}
+              - {label: "직위", name: "role", widget: "string"}
+              - {label: "이메일", name: "email", widget: "string"}
+              - {label: "전화", name: "phone", widget: "string"}
+              - {label: "교수실", name: "office", widget: "string"}
+              - {label: "사진", name: "photo", widget: "image", choose_url: false}
+              - {label: "소개", name: "intro", widget: "text"}
+          - label: "학생"
+            name: "students"
+            widget: "list"
+            collapsed: true
+            summary: "{{fields.name}} · {{fields.course}}"
+            label_singular: "학생 추가"
+            fields:
+              - {label: "이름", name: "name", widget: "string"}
+              - {label: "영문명", name: "name_en", widget: "string"}
+              - {label: "과정", name: "course", widget: "select", options: ["석사 과정", "박사 과정", "학·석사 연계과정", "학부연구생", "졸업생"]}
+              - {label: "이메일", name: "email", widget: "string"}
+              - {label: "사진", name: "photo", widget: "image", required: false, choose_url: false}
+
+  - label: "연구과제"
+    name: "projects"
+    description: "현재 수행 중이거나 공개할 연구과제를 관리합니다."
+    editor:
+      preview: false
+    files:
+      - label: "연구과제 목록"
+        name: "project_list"
+        file: "data/projects.json"
+        format: json
+        fields:
+          - label: "연구과제"
+            name: "items"
+            widget: "list"
+            add_to_top: true
+            collapsed: true
+            summary: "{{fields.title}} · {{fields.role}}"
+            label_singular: "과제 추가"
+            fields:
+              - {label: "역할", name: "role", widget: "select", options: ["연구책임", "공동연구", "참여연구"]}
+              - {label: "상태", name: "status", widget: "select", options: ["수행 중", "완료", "예정"]}
+              - {label: "기간", name: "period", widget: "string", required: false, hint: "예: 2026.07–2027.01"}
+              - {label: "과제명", name: "title", widget: "string"}
+              - {label: "설명", name: "detail", widget: "text"}
+
+  - label: "연구분야"
+    name: "research"
+    description: "홈페이지 Research 페이지의 두 연구축과 세부 주제를 관리합니다."
+    editor:
+      preview: false
+    files:
+      - label: "연구분야"
+        name: "research_list"
+        file: "data/research.json"
+        format: json
+        fields:
+          - label: "연구축"
+            name: "items"
+            widget: "list"
+            collapsed: true
+            summary: "{{fields.number}} · {{fields.title}}"
+            fields:
+              - {label: "ID", name: "id", widget: "string", hint: "URL 식별자. 기존 값은 가능하면 변경하지 마세요."}
+              - {label: "번호", name: "number", widget: "string"}
+              - {label: "한글 제목", name: "title", widget: "string"}
+              - {label: "영문 제목", name: "title_en", widget: "string"}
+              - {label: "설명", name: "summary", widget: "text"}
+              - label: "연구 흐름"
+                name: "flow"
+                widget: "list"
+                field: {label: "단계", name: "step", widget: "string"}
+              - label: "세부 연구주제"
+                name: "topics"
+                widget: "list"
+                collapsed: true
+                summary: "{{fields.title}}"
+                fields:
+                  - {label: "주제명", name: "title", widget: "string"}
+                  - {label: "키워드", name: "detail", widget: "string"}
