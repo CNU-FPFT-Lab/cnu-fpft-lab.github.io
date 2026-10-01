@@ -1,7 +1,10 @@
 backend:
-  name: turbo-github
-  turbo_site_id: REPLACE_WITH_DECAP_TURBO_SITE_ID
+  name: github
+  repo: CNU-FPFT-Lab/cnu-fpft-lab.github.io
   branch: main
+  base_url: REPLACE_WITH_OAUTH_WORKER_URL
+  auth_endpoint: auth
+  site_domain: cnu-fpft-lab.github.io
 
 locale: ko
 site_url: https://cnu-fpft-lab.github.io/
