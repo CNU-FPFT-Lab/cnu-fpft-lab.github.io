@@ -1,13 +1,13 @@
 {
   "pi": {
-    "name":"김응희",
+    "name":"김웅희",
     "name_en":"Eunghee Kim",
     "role":"조교수 · 전남대학교 식품공학과",
     "email":"ehkim88@jnu.ac.kr",
     "phone":"062-530-2147",
     "office":"농업생명과학대학 3호관 110호",
     "photo":"assets/eunghee-kim.jpg",
-    "intro":"식품가공과 품질공학을 기반으로 식품의 물성·유변학·향·분광·영상 데이터를 측정하고, 데이터 기반 품질 분석과 예측 연구를 수행합니다."
+    "intro":""
   },
   "students": [
     {"name":"이지민","name_en":"Jimin Lee","course":"석사 과정","email":"zimin@jnu.ac.kr"},
