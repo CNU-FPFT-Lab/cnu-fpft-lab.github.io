@@ -1,6 +1,6 @@
 document.documentElement.classList.add('js');
 
-const CNU_LOGO = 'https://bk21eef.jnu.ac.kr/CrossEditor/binary/newimages/images/000057/20240808174546636_OU7R1HSC.png';
+const CNU_LOGO = 'https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_of_Chonnam_National_University.svg';
 
 const button = document.querySelector('.menu-button');
 const nav = document.querySelector('#navigation');
@@ -22,6 +22,10 @@ document.querySelectorAll('.nav-group > button').forEach(btn => {
   btn.addEventListener('click', () => btn.parentElement.classList.toggle('open'));
 });
 
+// 모든 페이지에서 확대해도 선명한 전남대학교 벡터 로고를 사용한다.
+document.querySelectorAll('.site-brand-logo').forEach(img => {
+  img.src = CNU_LOGO;
+});
 document.querySelectorAll('.brand').forEach(brand => {
   if (brand.querySelector('.site-brand-logo')) return;
   const mark = brand.querySelector('.brand-mark');
