@@ -1,28 +1,30 @@
-[
-  {
-    "id": "processing",
-    "number": "01",
-    "title": "식품가공 및 품질공학",
-    "title_en": "Food Processing & Quality Engineering",
-    "summary": "식품의 가공조건과 배합이 구조, 물성, 기능성 및 최종 제품 품질에 미치는 영향을 연구합니다.",
-    "flow": ["원료·배합", "가공·구조화", "식품 구조·물성", "제품 품질"],
-    "topics": [
-      {"title":"재수화형 파스타","detail":"공정 · 구조 · 재수화 · 물성"},
-      {"title":"올레오겔 기반 식품 시스템","detail":"구조화 · 안정성 · 분산 · 유변학"},
-      {"title":"김치 기반 소스","detail":"공정설계 · 유동성 · 저장안정성 · 제품품질"}
-    ]
-  },
-  {
-    "id": "foodtech",
-    "number": "02",
-    "title": "푸드테크 기반 품질측정·분석",
-    "title_en": "FoodTech & Data-driven Quality Assessment",
-    "summary": "센싱과 계측을 통해 식품의 변화를 데이터로 변환하고, 통계·머신러닝·AI를 필요에 따라 활용하여 품질정보를 도출합니다.",
-    "flow": ["식품 시료", "측정·센싱", "식품 데이터", "품질정보"],
-    "topics": [
-      {"title":"물성·유변학 데이터 분석","detail":"곡선 · 특성값 · 전체 신호"},
-      {"title":"저비용 향 센싱","detail":"BME688 · 센서 시계열 · 품질분류"},
-      {"title":"초분광 식품 품질분석","detail":"HSI / RGB · 비파괴 평가"}
-    ]
-  }
-]
+{
+  "items": [
+    {
+      "id": "processing",
+      "number": "01",
+      "title": "식품가공 및 품질공학",
+      "title_en": "Food Processing & Quality Engineering",
+      "summary": "식품의 가공조건과 배합이 구조, 물성, 기능성 및 최종 제품 품질에 미치는 영향을 연구합니다.",
+      "flow": ["원료·배합", "가공·구조화", "식품 구조·물성", "제품 품질"],
+      "topics": [
+        {"title":"재수화형 파스타","detail":"공정 · 구조 · 재수화 · 물성"},
+        {"title":"올레오겔 기반 식품 시스템","detail":"구조화 · 안정성 · 분산 · 유변학"},
+        {"title":"김치 기반 소스","detail":"공정설계 · 유동성 · 저장안정성 · 제품품질"}
+      ]
+    },
+    {
+      "id": "foodtech",
+      "number": "02",
+      "title": "푸드테크 기반 품질측정·분석",
+      "title_en": "FoodTech & Data-driven Quality Assessment",
+      "summary": "센싱과 계측을 통해 식품의 변화를 데이터로 변환하고, 통계·머신러닝·AI를 필요에 따라 활용하여 품질정보를 도출합니다.",
+      "flow": ["식품 시료", "측정·센싱", "식품 데이터", "품질정보"],
+      "topics": [
+        {"title":"물성·유변학 데이터 분석","detail":"곡선 · 특성값 · 전체 신호"},
+        {"title":"저비용 향 센싱","detail":"BME688 · 센서 시계열 · 품질분류"},
+        {"title":"초분광 식품 품질분석","detail":"HSI / RGB · 비파괴 평가"}
+      ]
+    }
+  ]
+}
