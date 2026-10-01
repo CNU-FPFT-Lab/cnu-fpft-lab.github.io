@@ -84,7 +84,7 @@ collections:
               - {label: "전화", name: "phone", widget: "string"}
               - {label: "교수실", name: "office", widget: "string"}
               - {label: "사진", name: "photo", widget: "image", choose_url: false}
-              - {label: "소개", name: "intro", widget: "text"}
+              - {label: "소개", name: "intro", widget: "text", required: false}
           - label: "학생"
             name: "students"
             widget: "list"
@@ -142,10 +142,11 @@ collections:
               - {label: "번호", name: "number", widget: "string"}
               - {label: "한글 제목", name: "title", widget: "string"}
               - {label: "영문 제목", name: "title_en", widget: "string"}
-              - {label: "설명", name: "summary", widget: "text"}
+              - {label: "설명", name: "summary", widget: "text", required: false}
               - label: "연구 흐름"
                 name: "flow"
                 widget: "list"
+                required: false
                 field: {label: "단계", name: "step", widget: "string"}
               - label: "세부 연구주제"
                 name: "topics"
@@ -155,3 +156,4 @@ collections:
                 fields:
                   - {label: "주제명", name: "title", widget: "string"}
                   - {label: "키워드", name: "detail", widget: "string"}
+                  - {label: "연구 Figure", name: "figure", widget: "image", required: false, choose_url: false, hint: "해당 연구주제 상단에 표시할 대표 그림"}
