@@ -18,7 +18,7 @@
 
 ## 관리자 편집 화면
 
-일상적인 콘텐츠 업데이트는 아래 관리자 UI를 사용하는 것을 권장합니다.
+일상적인 콘텐츠 업데이트는 아래 관리자 UI를 사용합니다.
 
 **Admin:** https://cnu-fpft-lab.github.io/admin/
 
@@ -31,7 +31,21 @@
 - 연구과제 추가·수정
 - 연구분야와 세부 주제 수정
 
-관리 화면은 Decap CMS + Decap Turbo를 사용합니다. 최초 1회 Turbo Site 연결 후 `admin/config.yml`의 `turbo_site_id`만 실제 Site ID로 교체하면 됩니다.
+관리 화면은 **Decap CMS + GitHub OAuth + 자체 Cloudflare Worker 인증 프록시**를 사용합니다. Decap Turbo 유료 seat 방식은 사용하지 않습니다.
+
+학생은 각자의 GitHub 계정으로 로그인하며, 저장소에 `Write` 권한이 있는 사용자만 실제 내용을 저장할 수 있습니다.
+
+### 최초 1회 인증 설정
+
+저장소의 `oauth-proxy/` 폴더에 Cloudflare Worker용 OAuth 프록시가 준비되어 있습니다.
+
+1. GitHub OAuth App 생성
+2. `oauth-proxy/` Worker를 Cloudflare Workers에 배포
+3. OAuth Client ID / Secret / STATE_SECRET을 Wrangler secret으로 등록
+4. GitHub OAuth App callback URL을 Worker의 `/callback?provider=github`로 설정
+5. `admin/config.yml`의 `REPLACE_WITH_OAUTH_WORKER_URL`을 실제 Worker URL로 변경
+
+자세한 절차는 `oauth-proxy/README.md`를 참고하세요.
 
 ## 콘텐츠 데이터
 
@@ -45,7 +59,7 @@
 | 구성원 이름·과정·이메일 | `data/members.json` |
 | 학회·수상·연구실 활동 | `data/activities.json` |
 
-관리자 UI에서 저장하면 위 파일이 자동으로 commit되고 GitHub Pages가 변경 내용을 반영합니다. 별도의 빌드 명령은 필요하지 않습니다.
+관리자 UI에서 저장하면 위 파일과 업로드 이미지가 GitHub 저장소에 commit되고 GitHub Pages가 변경 내용을 반영합니다. 별도의 빌드 명령은 필요하지 않습니다.
 
 ## 이미지 관리
 
