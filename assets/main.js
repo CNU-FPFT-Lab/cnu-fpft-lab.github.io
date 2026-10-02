@@ -1,91 +1,19 @@
 document.documentElement.classList.add('js');
-document.documentElement.lang='ko';
 
-const CNU_LOGO='https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_of_Chonnam_National_University.svg';
 const button=document.querySelector('.menu-button');
 const nav=document.querySelector('#navigation');
-const page=(location.pathname.split('/').pop()||'index.html').toLowerCase();
-
 button?.addEventListener('click',()=>{
   const open=button.getAttribute('aria-expanded')!=='true';
   button.setAttribute('aria-expanded',String(open));
   nav?.classList.toggle('open',open);
-  button.textContent=open?'Close':'Menu';
+  button.textContent=open?'닫기':'Menu';
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&button?.getAttribute('aria-expanded')==='true'){
-    nav?.classList.remove('open');
-    button.setAttribute('aria-expanded','false');
-    button.textContent='Menu';
-    button.focus();
+    nav?.classList.remove('open');button.setAttribute('aria-expanded','false');button.textContent='Menu';
   }
 });
 document.querySelectorAll('.nav-group > button').forEach(btn=>btn.addEventListener('click',()=>btn.parentElement.classList.toggle('open')));
-document.querySelectorAll('.site-brand-logo').forEach(img=>img.src=CNU_LOGO);
-
-function setText(selector,text){const el=document.querySelector(selector);if(el)el.textContent=text;}
-function removeOne(selector){document.querySelector(selector)?.remove();}
-
-function normalizeUI(){
-  const titles={
-    'index.html':'Food Processing and FoodTech Lab | Chonnam National University',
-    'research.html':'Research | FPFT Lab',
-    'members.html':'Members | FPFT Lab',
-    'publications.html':'Research Outputs | FPFT Lab',
-    'photos.html':'Activities | FPFT Lab',
-    'activity.html':'Activity | FPFT Lab',
-    'contact.html':'Contact | FPFT Lab'
-  };
-  if(titles[page])document.title=titles[page];
-  if(button&&button.getAttribute('aria-expanded')!=='true')button.textContent='Menu';
-
-  document.querySelectorAll('.site-brand-text strong').forEach(el=>el.textContent='Food Processing and FoodTech Lab');
-  document.querySelectorAll('.site-brand-text em').forEach(el=>el.textContent='Chonnam National University');
-  document.querySelectorAll('.site-brand-logo').forEach(img=>img.alt='Chonnam National University logo');
-
-  document.querySelectorAll('.nav > a').forEach(a=>{
-    const href=a.getAttribute('href')||'';
-    if(href.endsWith('index.html'))a.textContent='Home';
-    else if(href.endsWith('research.html'))a.textContent='Research';
-    else if(href.endsWith('photos.html'))a.textContent='Activities';
-    else if(href.endsWith('contact.html'))a.textContent='Contact';
-  });
-  const groups=document.querySelectorAll('.nav-group');
-  if(groups[0])groups[0].querySelector(':scope > button').textContent='Members';
-  if(groups[1])groups[1].querySelector(':scope > button').textContent='Research Outputs';
-  document.querySelectorAll('.nav-sub a').forEach(a=>{
-    const href=a.getAttribute('href')||'';
-    if(href.endsWith('#pi'))a.textContent='Principal Investigator';
-    else if(href.endsWith('#students'))a.textContent='Students';
-    else if(href.endsWith('#papers'))a.textContent='Publications';
-    else if(href.endsWith('#projects'))a.textContent='Research Projects';
-    else if(href.endsWith('#patents'))a.textContent='Patents & Technology Transfer';
-  });
-
-  document.querySelectorAll('.site-footer strong').forEach(el=>el.textContent='Food Processing and FoodTech Lab');
-  document.querySelectorAll('.site-footer .footer-cnu').forEach(el=>el.textContent='전남대학교 식품공학과');
-  document.querySelectorAll('.site-footer .footer-cnu + p').forEach(el=>el.textContent='광주광역시 북구 용봉로 77 · 농업생명과학대학 3호관');
-  document.querySelectorAll('.site-footer a[href="contact.html"]').forEach(el=>el.textContent='Contact →');
-
-  if(page==='members.html'){
-    removeOne('.page-hero .eyebrow');
-    removeOne('.student-section .section-head .eyebrow');
-    setText('.page-hero h1','Members');
-    setText('.student-section .section-head h2','Students');
-    const detailBlocks=document.querySelectorAll('.profile-details > div');
-    if(detailBlocks[0])detailBlocks[0].innerHTML='<h2>Education</h2><ul><li>서울대학교 식품생명공학 학사</li><li>서울대학교 농생명공학 석사</li><li>서울대학교 농생명공학 박사</li></ul>';
-    if(detailBlocks[1])detailBlocks[1].innerHTML='<h2>Experience</h2><ul><li><span>2025.03–현재</span> 전남대학교 식품공학과 조교수</li><li><span>2023.08–2025.02</span> 한국식품연구원 스마트제조연구단 박사후연구원</li><li><span>2021.09–2023.07</span> 서울대학교 Food Bio Convergence Institute 선임연구원 / 연구교수</li><li><span>2021.08–2022.08</span> 연세대학교 식품영양학과 객원교수</li><li><span>2019.03–2021.02</span> 성신여자대학교 바이오식품공학과 강사</li></ul>';
-  }else if(page==='photos.html'){
-    removeOne('.activities-page-hero .eyebrow');
-    setText('.activities-page-hero h1','Activities');
-  }else if(page==='activity.html'){
-    removeOne('.page-hero .eyebrow');
-    setText('.page-hero h1','Activity');
-  }else if(page==='contact.html'){
-    removeOne('.page-hero .eyebrow');
-    setText('.page-hero h1','Contact');
-  }
-}
 
 async function getJSON(path){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw new Error(`${path} (${r.status})`);return r.json();}
 function asItems(v){return Array.isArray(v)?v:(v&&Array.isArray(v.items)?v.items:[]);}
@@ -99,15 +27,20 @@ async function unwrapEmbeddedImage(img){
   try{
     const r=await fetch(src,{cache:'no-store'});
     if(!r.ok)throw new Error(src);
-    const text=await r.text();
-    const m=text.match(/(?:href|xlink:href)=["'](data:image\/(?:webp|jpeg|jpg|png);base64,[^"']+)["']/i);
-    if(!m)throw new Error('embedded image not found');
-    img.src=m[1];
-  }catch(e){img.src=src;}
+    const svgText=await r.text();
+    const doc=new DOMParser().parseFromString(svgText,'image/svg+xml');
+    const node=doc.querySelector('image');
+    const data=node?.getAttribute('href')||node?.getAttributeNS('http://www.w3.org/1999/xlink','href')||node?.getAttribute('xlink:href');
+    if(!data||!data.startsWith('data:image/'))throw new Error('embedded image not found');
+    img.removeAttribute('data-embedded-svg');
+    img.src=data;
+  }catch(e){
+    img.removeAttribute('data-embedded-svg');
+    img.src=src;
+  }
 }
 async function hydrateEmbeddedImages(root=document){
-  const imgs=[...root.querySelectorAll('img[data-embedded-svg]')];
-  await Promise.all(imgs.map(unwrapEmbeddedImage));
+  await Promise.all([...root.querySelectorAll('img[data-embedded-svg]')].map(unwrapEmbeddedImage));
 }
 
 function parsePublication(text){
@@ -134,7 +67,7 @@ async function renderNotices(){
   const el=document.querySelector('[data-notices]');if(!el)return;
   try{
     const data=asItems(await getJSON('data/notices.json'));
-    if(!data.length)return;
+    if(!data.length){el.innerHTML='';return;}
     el.innerHTML=data.map(n=>`<article class="notice-row"><time>${escapeHTML(n.date||'')}</time><div class="notice-content"><h3>${escapeHTML(n.title||'')}</h3>${n.meta?`<p class="notice-meta">${escapeHTML(n.meta)}</p>`:''}${n.detail?`<p class="notice-detail">${lines(n.detail)}</p>`:''}${n.email?`<a class="notice-email" href="mailto:${escapeHTML(n.email)}">신청 / 문의 · ${escapeHTML(n.email)}</a>`:''}</div></article>`).join('');
   }catch(e){showError(el);}
 }
@@ -144,34 +77,29 @@ async function renderResearch(){
   try{
     const data=asItems(await getJSON('data/research.json'));
     el.innerHTML=data.map((r,i)=>{
-      const summary=String(r.summary||'').trim();
-      const flow=Array.isArray(r.flow)&&r.flow.length?`<div class="flow-line">${r.flow.map((x,j)=>`${j?'<i>→</i>':''}<span>${escapeHTML(typeof x==='string'?x:(x.step||''))}</span>`).join('')}</div>`:'';
       const overview=r.overview_figure?`<figure class="research-overview-figure"><img data-embedded-svg="${escapeHTML(r.overview_figure)}" alt="${escapeHTML(r.title)} 연구 개요"></figure>`:'';
       const topics=(r.topics||[]).map(t=>`<article class="topic-card"><h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`).join('');
-      const eng=String(r.title_en||'').trim()?`<p class="eng-title">${escapeHTML(r.title_en)}</p>`:'';
-      return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2>${eng}${summary?`<p class="research-summary">${escapeHTML(summary)}</p>`:''}${flow}${overview}<div class="topic-grid">${topics}</div></div></div></section>`;
+      return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2>${overview}<div class="topic-grid">${topics}</div></div></div></section>`;
     }).join('');
     await hydrateEmbeddedImages(el);
   }catch(e){showError(el);}
 }
 
-const courseEN={'M.S.':'M.S. Students','Ph.D.':'Ph.D. Students','B.S.–M.S. Integrated':'B.S.–M.S. Integrated Students','Undergraduate Researcher':'Undergraduate Researchers','Alumni':'Alumni','석사 과정':'M.S. Students','박사 과정':'Ph.D. Students','학·석사 연계과정':'B.S.–M.S. Integrated Students','학부연구생':'Undergraduate Researchers','졸업생':'Alumni'};
-const courseLabelEN={'M.S.':'M.S. Student','Ph.D.':'Ph.D. Student','B.S.–M.S. Integrated':'B.S.–M.S. Integrated Student','Undergraduate Researcher':'Undergraduate Researcher','Alumni':'Alumni','석사 과정':'M.S. Student','박사 과정':'Ph.D. Student','학·석사 연계과정':'B.S.–M.S. Integrated Student','학부연구생':'Undergraduate Researcher','졸업생':'Alumni'};
+const courseEN={'M.S.':'M.S. Students','Ph.D.':'Ph.D. Students','B.S.–M.S. Integrated':'B.S.–M.S. Integrated Students','Undergraduate Researcher':'Undergraduate Researchers','Alumni':'Alumni'};
+const courseLabelEN={'M.S.':'M.S. Student','Ph.D.':'Ph.D. Student','B.S.–M.S. Integrated':'B.S.–M.S. Integrated Student','Undergraduate Researcher':'Undergraduate Researcher','Alumni':'Alumni'};
 function fallbackStudentPhoto(name){const node=[...document.querySelectorAll('[data-student-photo]')].find(img=>img.dataset.studentPhoto===name);return node?.getAttribute('src')||'';}
 async function renderMembers(){
   const piEl=document.querySelector('[data-pi]'),studentsEl=document.querySelector('[data-students]');if(!piEl&&!studentsEl)return;
   try{
     const data=await getJSON('data/members.json');
     if(piEl){
-      const p=data.pi,intro=String(p.intro||'').trim();
-      const photo=p.photo||'assets/eunghee-kim.jpg';
-      const photoAttr=/\.svg(?:$|\?)/i.test(photo)?`data-embedded-svg="${escapeHTML(photo)}"`:`src="${escapeHTML(photo)}"`;
-      piEl.innerHTML=`<img ${photoAttr} alt="${escapeHTML(p.name_en||p.name)}"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p>${intro?`<p>${escapeHTML(intro)}</p>`:''}<div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
+      const p=data.pi,photo=p.photo||'assets/eunghee-kim-current-v4.svg';
+      piEl.innerHTML=`<img data-embedded-svg="${escapeHTML(photo)}" alt="${escapeHTML(p.name_en||p.name)}"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
       await hydrateEmbeddedImages(piEl);
     }
     if(studentsEl){
       const groups={};(data.students||[]).forEach(s=>(groups[s.course]||=[]).push(s));
-      studentsEl.innerHTML=Object.entries(groups).map(([course,items])=>`<h2 class="member-group-title">${escapeHTML(courseEN[course]||course)}</h2><div class="student-list">${items.map(s=>{const photo=s.photo||fallbackStudentPhoto(s.name),courseLabel=courseLabelEN[course]||course;return `<article class="student-row">${photo?`<img class="student-portrait" src="${photo}" alt="${escapeHTML(s.name_en||s.name)}" loading="lazy">`:`<div class="student-portrait student-portrait-fallback">${escapeHTML((s.name_en||s.name).slice(0,1))}</div>`}<div class="student-info"><p class="eyebrow">${escapeHTML(courseLabel)}</p><h3>${escapeHTML(s.name_en||s.name)}${s.name?` <span>${escapeHTML(s.name)}</span>`:''}</h3><a href="mailto:${escapeHTML(s.email)}">${escapeHTML(s.email)}</a></div></article>`;}).join('')}</div>`).join('');
+      studentsEl.innerHTML=Object.entries(groups).map(([course,items])=>`<h2 class="member-group-title">${escapeHTML(courseEN[course]||course)}</h2><div class="student-list">${items.map(s=>{const photo=s.photo||fallbackStudentPhoto(s.name);return `<article class="student-row">${photo?`<img class="student-portrait" src="${photo}" alt="${escapeHTML(s.name_en||s.name)}" loading="lazy">`:`<div class="student-portrait student-portrait-fallback">${escapeHTML((s.name_en||s.name).slice(0,1))}</div>`}<div class="student-info"><p class="eyebrow">${escapeHTML(courseLabelEN[course]||course)}</p><h3>${escapeHTML(s.name_en||s.name)}${s.name?` <span>${escapeHTML(s.name)}</span>`:''}</h3><a href="mailto:${escapeHTML(s.email)}">${escapeHTML(s.email)}</a></div></article>`;}).join('')}</div>`).join('');
     }
   }catch(e){showError(piEl||studentsEl);}
 }
@@ -179,9 +107,8 @@ async function renderMembers(){
 async function renderProjects(){
   const el=document.querySelector('[data-projects]');if(!el)return;
   try{
-    const rank={'Current':0,'Upcoming':1,'Completed':2,'수행 중':0,'예정':1,'완료':2};
-    const data=asItems(await getJSON('data/projects.json')).sort((a,b)=>(rank[a.status]??9)-(rank[b.status]??9));
-    el.innerHTML=data.map(p=>`<article class="project-row"><div class="project-status ${['Completed','완료'].includes(p.status)?'is-past':''}">${escapeHTML(p.status||'')}</div><div class="project-main"><p class="project-program">${escapeHTML(p.program||'연구과제')}</p><h3>${escapeHTML(p.title)}</h3>${p.detail?`<p class="project-detail">${escapeHTML(p.detail)}</p>`:''}</div><dl class="project-meta"><div><dt>기간</dt><dd>${escapeHTML(p.period||'—')}</dd></div><div><dt>역할</dt><dd>${escapeHTML(p.role||'—')}</dd></div></dl></article>`).join('');
+    const data=asItems(await getJSON('data/projects.json'));
+    el.innerHTML=data.map(p=>`<article class="project-entry"><h3>${escapeHTML(p.title)}</h3><dl class="project-facts"><div><dt>지원기관</dt><dd>${escapeHTML(p.agency||'—')}</dd></div><div><dt>지원사업</dt><dd>${escapeHTML(p.program||'—')}</dd></div><div><dt>지원기간</dt><dd>${escapeHTML(p.period||'—')}</dd></div><div><dt>참여형태</dt><dd>${escapeHTML(p.role||p.participation||'—')}</dd></div></dl></article>`).join('');
   }catch(e){showError(el);}
 }
 
@@ -198,8 +125,7 @@ async function renderActivityDetail(){
   try{
     const data=asItems(await getJSON('data/activities.json'));
     const id=new URLSearchParams(location.search).get('id')||'';
-    let item=data.find(a=>String(a.id)===id);
-    if(!item&&/^\d+$/.test(id))item=data[Number(id)];
+    let item=data.find(a=>String(a.id)===id);if(!item&&/^\d+$/.test(id))item=data[Number(id)];
     if(!item){el.innerHTML='<p class="data-error">해당 활동을 찾을 수 없습니다.</p>';return;}
     el.innerHTML=`<article class="activity-detail"><a class="activity-back" href="photos.html">← Activities</a><img class="activity-detail-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}"><div class="activity-detail-copy"><p class="eyebrow">${escapeHTML(item.type||'연구실 활동')}</p><h2>${escapeHTML(item.title)}</h2><dl class="activity-detail-meta"><div><dt>기간</dt><dd>${escapeHTML(item.date||'—')}</dd></div>${item.location?`<div><dt>장소</dt><dd>${escapeHTML(item.location)}</dd></div>`:''}</dl>${item.detail?`<div class="activity-detail-body"><h3>내용</h3><p>${lines(item.detail)}</p></div>`:''}</div></article>`;
   }catch(e){showError(el);}
@@ -222,7 +148,6 @@ async function renderAllPublications(){
   }catch(e){showError(el);}
 }
 
-normalizeUI();
 renderLatestPublications();
 renderNotices();
 renderResearch();
