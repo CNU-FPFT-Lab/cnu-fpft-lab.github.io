@@ -16,9 +16,6 @@ logo:
 
 media_folder: assets/uploads
 public_folder: /assets/uploads
-media_library:
-  config:
-    max_file_size: 15000000
 
 collections:
   - label: "공지사항"
