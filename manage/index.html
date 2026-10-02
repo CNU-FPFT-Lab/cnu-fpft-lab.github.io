@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#007a33">
   <title>FPFT Lab 교수용 전체 관리</title>
-  <link rel="stylesheet" href="../admin/admin.css?v=20261002b">
+  <link rel="stylesheet" href="../admin/admin.css?v=20261002c">
 </head>
 <body data-admin-mode="manager">
   <div id="preflight" class="setup">
@@ -40,12 +40,12 @@
         <span>간편 관리에 없는 구성원과 Research 구조까지 수정할 수 있습니다. ID나 연구 구조 변경은 저장 전 다시 확인하세요.</span>
       </div>
       <div class="fpft-helpitem">
-        <strong>② 이미지 원본 업로드</strong>
-        <span>프로필과 Research Figure는 원본을 그대로 올리면 홈페이지에서 용도별로 자동 맞춤됩니다.</span>
+        <strong>② 이미지는 기본 업로더로 선택</strong>
+        <span>이미지 필드에서 업로드를 열고 원본 파일을 선택한 뒤 ‘선택한 것으로 결정’을 눌러 실제 필드에 반영하세요.</span>
       </div>
       <div class="fpft-helpitem">
-        <strong>③ 교수 계정 전용</strong>
-        <span>OAuth Worker의 관리자 허용목록에 등록된 GitHub 계정만 로그인할 수 있도록 분리되어 있습니다.</span>
+        <strong>③ 반영 후 Decap 저장/발행</strong>
+        <span>미디어 창을 닫고 편집 화면으로 돌아오면 Decap의 저장/발행 버튼으로 변경사항을 확정합니다.</span>
       </div>
     </section>
 
@@ -65,7 +65,7 @@
           return;
         }
         preflight.remove();shell.hidden=false;
-        addScript('../admin/admin-ui.js?v=20261002b',()=>addScript('https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js'));
+        addScript('../admin/admin-ui.js?v=20261002c',()=>addScript('https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js'));
       }catch(error){console.error(error);preflight.innerHTML='<main class="card"><div class="brand">CNU FPFT Lab</div><h1>설정 파일을 읽지 못했습니다.</h1><p>manage/config.yml을 확인해 주세요.</p><div class="links"><a class="secondary" href="/">홈페이지로 돌아가기</a></div></main>';}
     }
     boot();
