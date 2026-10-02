@@ -15,33 +15,19 @@ document.addEventListener('keydown',e=>{
 });
 document.querySelectorAll('.nav-group > button').forEach(btn=>btn.addEventListener('click',()=>btn.parentElement.classList.toggle('open')));
 
+// Keep the visible lab identity consistent across all pages.
+document.querySelectorAll('.site-brand-text strong').forEach(el=>el.textContent='식품가공및푸드테크연구실');
+document.querySelectorAll('.site-brand-text em').forEach(el=>el.textContent='Chonnam National University');
+document.querySelectorAll('.site-footer strong,.footer strong').forEach(el=>el.textContent='식품가공및푸드테크연구실');
+const homeTitle=document.querySelector('.home-hero h1');
+if(homeTitle)homeTitle.textContent='식품가공및푸드테크연구실';
+document.querySelector('.home-keywords')?.remove();
+
 async function getJSON(path){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw new Error(`${path} (${r.status})`);return r.json();}
 function asItems(v){return Array.isArray(v)?v:(v&&Array.isArray(v.items)?v.items:[]);}
 function showError(el){if(el)el.innerHTML='<div class="data-error">데이터를 불러오지 못했습니다. 잠시 후 다시 확인해주세요.</div>';}
 function escapeHTML(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function lines(v=''){return escapeHTML(v).replace(/\n/g,'<br>');}
-
-async function unwrapEmbeddedImage(img){
-  const src=img?.dataset?.embeddedSvg;
-  if(!src)return;
-  try{
-    const r=await fetch(src,{cache:'no-store'});
-    if(!r.ok)throw new Error(src);
-    const svgText=await r.text();
-    const doc=new DOMParser().parseFromString(svgText,'image/svg+xml');
-    const node=doc.querySelector('image');
-    const data=node?.getAttribute('href')||node?.getAttributeNS('http://www.w3.org/1999/xlink','href')||node?.getAttribute('xlink:href');
-    if(!data||!data.startsWith('data:image/'))throw new Error('embedded image not found');
-    img.removeAttribute('data-embedded-svg');
-    img.src=data;
-  }catch(e){
-    img.removeAttribute('data-embedded-svg');
-    img.src=src;
-  }
-}
-async function hydrateEmbeddedImages(root=document){
-  await Promise.all([...root.querySelectorAll('img[data-embedded-svg]')].map(unwrapEmbeddedImage));
-}
 
 function parsePublication(text){
   const num=(text.match(/^\[(\d+)\]/)||[,''])[1];
@@ -77,11 +63,10 @@ async function renderResearch(){
   try{
     const data=asItems(await getJSON('data/research.json'));
     el.innerHTML=data.map((r,i)=>{
-      const overview=r.overview_figure?`<figure class="research-overview-figure"><img data-embedded-svg="${escapeHTML(r.overview_figure)}" alt="${escapeHTML(r.title)} 연구 개요"></figure>`:'';
+      const overview=r.overview_figure?`<figure class="research-overview-figure"><img src="${escapeHTML(r.overview_figure)}" alt="${escapeHTML(r.title)} 연구 개요" loading="eager"></figure>`:'';
       const topics=(r.topics||[]).map(t=>`<article class="topic-card"><h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`).join('');
       return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2>${overview}<div class="topic-grid">${topics}</div></div></div></section>`;
     }).join('');
-    await hydrateEmbeddedImages(el);
   }catch(e){showError(el);}
 }
 
@@ -94,8 +79,7 @@ async function renderMembers(){
     const data=await getJSON('data/members.json');
     if(piEl){
       const p=data.pi,photo=p.photo||'assets/eunghee-kim-current-v4.svg';
-      piEl.innerHTML=`<img data-embedded-svg="${escapeHTML(photo)}" alt="${escapeHTML(p.name_en||p.name)}"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
-      await hydrateEmbeddedImages(piEl);
+      piEl.innerHTML=`<img src="${escapeHTML(photo)}" alt="${escapeHTML(p.name_en||p.name)}"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
     }
     if(studentsEl){
       const groups={};(data.students||[]).forEach(s=>(groups[s.course]||=[]).push(s));
