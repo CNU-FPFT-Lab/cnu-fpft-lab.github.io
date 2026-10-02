@@ -6,7 +6,7 @@
       "title": "Food Processing",
       "title_en": "",
       "summary": "",
-      "overview_figure": "assets/research-processing-overview.jpg",
+      "overview_figure": "assets/research-processing-overview.svg",
       "flow": [],
       "topics": [
         {"title": "재수화형 파스타", "detail": "공정 · 구조 · 재수화 · 물성", "figure": ""},
@@ -20,7 +20,7 @@
       "title": "FoodTech",
       "title_en": "",
       "summary": "",
-      "overview_figure": "assets/research-foodtech-overview.jpg",
+      "overview_figure": "assets/research-foodtech-overview.svg",
       "flow": [],
       "topics": [
         {"title": "물성·유변학 데이터 분석", "detail": "곡선 · 특성값 · 전체 신호", "figure": ""},
