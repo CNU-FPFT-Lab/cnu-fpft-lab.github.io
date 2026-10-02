@@ -6,7 +6,19 @@ workers_dev = true
 [vars]
 CMS_ORIGIN = "https://cnu-fpft-lab.github.io"
 GITHUB_REPO_PRIVATE = "0"
-ALLOWED_SITE_ID = ""
-# Optional allowlist. Leave empty to allow any GitHub user who has repository permission.
-# Example: ALLOWED_GITHUB_USERS = "student1,student2,professor-login"
+
+# Decap sends site_domain as site_id. The Worker uses it to distinguish the two CMS routes.
+STUDENT_SITE_ID = "cnu-fpft-lab.github.io"
+MANAGER_SITE_ID = "cnu-fpft-lab.github.io/manage"
+
+# Professor/manager accounts: only these accounts can open /manage/ after Worker redeploy.
+MANAGER_GITHUB_USERS = "dkrnd2"
+
+# Shared /admin/ accounts. Add student GitHub usernames here, comma-separated.
+# Manager accounts are automatically also allowed to use /admin/.
+# Example: STUDENT_GITHUB_USERS = "student-a,student-b"
+STUDENT_GITHUB_USERS = ""
+
+# Deprecated migration variable. Keep empty unless temporarily migrating from the old config.
 ALLOWED_GITHUB_USERS = ""
+ALLOWED_SITE_ID = ""
