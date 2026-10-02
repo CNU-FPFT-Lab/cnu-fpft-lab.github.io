@@ -1,4 +1,4 @@
-/* FPFT Lab student-facing CMS skin */
+/* FPFT Lab CMS skin */
 :root{
   --fpft-green:#007a33;
   --fpft-green-dark:#005f28;
@@ -23,7 +23,6 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 button,input,textarea,select{font:inherit}
-
 [hidden]{display:none!important}
 
 /* Preflight / connection screen */
@@ -41,11 +40,10 @@ button,input,textarea,select{font:inherit}
 .links a{display:inline-block;padding:10px 14px;border-radius:7px;font-size:13px;font-weight:700;text-decoration:none}
 .primary{background:var(--fpft-green);color:#fff}.secondary{border:1px solid var(--fpft-line);color:var(--fpft-ink);background:#fff}
 
-/* Persistent lab admin bar */
+/* Lab header stays in normal document flow so it never covers Decap's own save/publish toolbar. */
 .fpft-adminbar{
-  position:sticky;
-  top:0;
-  z-index:10000;
+  position:relative;
+  z-index:2;
   min-height:74px;
   display:flex;
   align-items:center;
@@ -54,8 +52,7 @@ button,input,textarea,select{font:inherit}
   padding:12px 26px;
   border-top:4px solid var(--fpft-green);
   border-bottom:1px solid var(--fpft-line);
-  background:rgba(255,255,255,.97);
-  backdrop-filter:blur(10px);
+  background:#fff;
 }
 .fpft-adminbrand{display:flex;align-items:center;gap:14px;min-width:0}
 .fpft-adminmark{width:42px;height:42px;border-radius:9px;display:grid;place-items:center;background:var(--fpft-green);color:#fff;font-weight:900;font-size:12px;letter-spacing:.03em;flex:none}
@@ -81,10 +78,10 @@ button,input,textarea,select{font:inherit}
 .fpft-adminhelp.is-collapsed{display:none}
 
 /* Decap mount */
-#nc-root{min-height:calc(100vh - 74px);font-family:inherit!important}
+#nc-root{min-height:calc(100vh - 74px);font-family:inherit!important;position:relative;z-index:1}
 #nc-root *{font-family:Inter,"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 
-/* Make the stock CMS more readable without depending on generated class names. */
+/* Readability only; do not alter Decap media-library positioning or file controls. */
 #nc-root input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 #nc-root textarea,
 #nc-root select{
@@ -102,43 +99,8 @@ button,input,textarea,select{font:inherit}
 #nc-root h2{font-size:23px!important;letter-spacing:-.025em!important}
 #nc-root h3{font-size:18px!important}
 #nc-root aside{font-size:14px!important}
-#nc-root [role="dialog"]{font-family:inherit!important}
-#nc-root [role="dialog"] button{min-height:38px}
-
-/* Add breathing room to nested content cards / list items. */
 #nc-root fieldset{border-radius:10px!important}
 #nc-root hr{border-color:var(--fpft-line)!important}
-
-/* File drop zone injected next to any Decap file input. */
-.fpft-dropzone{
-  width:100%;
-  margin:12px 0;
-  padding:24px 18px;
-  border:2px dashed #a9c6b5;
-  border-radius:12px;
-  background:#f8fbf9;
-  text-align:center;
-  color:#45524a;
-  outline:none;
-  transition:border-color .15s ease,background .15s ease,box-shadow .15s ease;
-}
-.fpft-dropzone:hover,.fpft-dropzone:focus,.fpft-dropzone.is-dragging{
-  border-color:var(--fpft-green);
-  background:#eef7f1;
-  box-shadow:0 0 0 3px rgba(0,122,51,.08);
-}
-.fpft-dropzone-icon{width:42px;height:42px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:#e6f3eb;color:var(--fpft-green);font-size:21px;font-weight:800}
-.fpft-dropzone-title{display:block;font-size:15px;font-weight:800;color:var(--fpft-ink);margin-bottom:4px}
-.fpft-dropzone-copy{display:block;font-size:12px;color:var(--fpft-muted);margin-bottom:13px}
-.fpft-dropzone-button{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--fpft-green)!important;background:#fff!important;color:var(--fpft-green)!important;border-radius:8px!important;padding:9px 14px!important;font-size:13px!important;font-weight:800!important;cursor:pointer}
-.fpft-dropzone-status{display:block;min-height:18px;margin-top:9px;font-size:12px;color:var(--fpft-green-dark)}
-.fpft-dropzone.is-error .fpft-dropzone-status{color:#b42318}
-
-/* Full-window drag cue while a file is being dragged over the CMS. */
-.fpft-drag-overlay{position:fixed;inset:0;z-index:20000;display:none;align-items:center;justify-content:center;background:rgba(7,35,21,.72);pointer-events:none}
-.fpft-drag-overlay.is-visible{display:flex}
-.fpft-drag-overlay div{padding:28px 38px;border:2px dashed rgba(255,255,255,.75);border-radius:14px;color:#fff;background:rgba(0,0,0,.16);font-size:18px;font-weight:800;text-align:center}
-.fpft-drag-overlay span{display:block;margin-top:7px;font-size:12px;font-weight:500;color:rgba(255,255,255,.82)}
 
 @media(max-width:860px){
   .fpft-adminbar{align-items:flex-start;flex-direction:column;padding:12px 16px}
@@ -154,5 +116,4 @@ button,input,textarea,select{font:inherit}
   #nc-root h1{font-size:25px!important}
   #nc-root h2{font-size:21px!important}
   #nc-root input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),#nc-root textarea,#nc-root select{font-size:14px!important}
-  .fpft-dropzone{padding:20px 12px}
 }
