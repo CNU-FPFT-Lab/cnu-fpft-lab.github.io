@@ -29,23 +29,44 @@ function showError(el){if(el)el.innerHTML='<div class="data-error">데이터를 
 function escapeHTML(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function lines(v=''){return escapeHTML(v).replace(/\n/g,'<br>');}
 
-// GitHub connector writes text reliably but previously corrupted direct binary image uploads.
-// Store verified WebP bytes as base64 text and reconstruct them in the browser instead.
+// Keep image bytes as base64 text in GitHub. The large research infographics are
+// split into small text chunks and reassembled in the browser to avoid binary corruption.
 const imageDataFiles={
-  processing:'assets/image-data/processing.b64',
-  foodtech:'assets/image-data/foodtech.b64',
-  pi:'assets/image-data/pi.b64'
+  processing:[
+    'assets/image-data/processing-hq-01.b64',
+    'assets/image-data/processing-hq-02.b64',
+    'assets/image-data/processing-hq-03.b64',
+    'assets/image-data/processing-hq-04.b64',
+    'assets/image-data/processing-hq-05.b64',
+    'assets/image-data/processing-hq-06.b64'
+  ],
+  foodtech:[
+    'assets/image-data/foodtech-hq-01.b64',
+    'assets/image-data/foodtech-hq-02.b64',
+    'assets/image-data/foodtech-hq-03.b64',
+    'assets/image-data/foodtech-hq-04.b64',
+    'assets/image-data/foodtech-hq-05.b64',
+    'assets/image-data/foodtech-hq-06.b64',
+    'assets/image-data/foodtech-hq-07.b64'
+  ],
+  pi:['assets/image-data/pi.b64']
 };
+const imageMime={processing:'image/avif',foodtech:'image/avif',pi:'image/webp'};
 const imageDataCache={};
 const transparentPixel='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 async function getImageData(key){
-  if(!imageDataFiles[key])throw new Error(`Unknown image key: ${key}`);
+  const files=imageDataFiles[key];
+  if(!files)throw new Error(`Unknown image key: ${key}`);
   if(!imageDataCache[key]){
-    imageDataCache[key]=fetch(imageDataFiles[key],{cache:'no-store'}).then(async r=>{
-      if(!r.ok)throw new Error(`${imageDataFiles[key]} (${r.status})`);
-      const data=(await r.text()).replace(/\s+/g,'');
+    const list=Array.isArray(files)?files:[files];
+    imageDataCache[key]=Promise.all(list.map(async path=>{
+      const r=await fetch(path,{cache:'no-store'});
+      if(!r.ok)throw new Error(`${path} (${r.status})`);
+      return (await r.text()).replace(/\s+/g,'');
+    })).then(parts=>{
+      const data=parts.join('');
       if(!data)throw new Error(`Empty image data: ${key}`);
-      return `data:image/webp;base64,${data}`;
+      return `data:${imageMime[key]||'image/webp'};base64,${data}`;
     });
   }
   return imageDataCache[key];
