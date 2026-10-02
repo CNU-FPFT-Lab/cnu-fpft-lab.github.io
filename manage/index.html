@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#007a33">
+  <title>FPFT Lab 교수용 전체 관리</title>
+  <link rel="stylesheet" href="../admin/admin.css?v=20261002b">
+</head>
+<body data-admin-mode="manager">
+  <div id="preflight" class="setup">
+    <main class="card">
+      <div class="brand">CNU FPFT Lab</div>
+      <h1>교수용 전체 편집기 설정 확인 중</h1>
+      <p>GitHub 로그인과 편집기 연결 상태를 확인하고 있습니다.</p>
+    </main>
+  </div>
+
+  <div id="admin-shell" hidden>
+    <header class="fpft-adminbar">
+      <div class="fpft-adminbrand">
+        <div class="fpft-adminmark" aria-hidden="true">FPFT</div>
+        <div>
+          <strong>FPFT Lab 교수용 전체 관리</strong>
+          <span>공지 · 논문 · 활동 · 구성원 · 연구과제 · 연구분야 전체 편집</span>
+        </div>
+      </div>
+      <div class="fpft-adminactions">
+        <button id="fpft-help-toggle" type="button" aria-expanded="true">사용 안내 닫기</button>
+        <a href="/" target="_blank" rel="noopener">홈페이지 보기 ↗</a>
+        <a href="/admin/">간편 관리</a>
+        <a class="is-primary" href="https://github.com/CNU-FPFT-Lab/cnu-fpft-lab.github.io" target="_blank" rel="noopener">GitHub 저장소 ↗</a>
+      </div>
+    </header>
+
+    <section class="fpft-adminhelp" id="fpft-adminhelp" aria-label="전체 편집기 사용 안내">
+      <div class="fpft-helpitem">
+        <strong>① 전체 구조 관리</strong>
+        <span>간편 관리에 없는 구성원과 Research 구조까지 수정할 수 있습니다. ID나 연구 구조 변경은 저장 전 다시 확인하세요.</span>
+      </div>
+      <div class="fpft-helpitem">
+        <strong>② 이미지 원본 업로드</strong>
+        <span>프로필과 Research Figure는 원본을 그대로 올리면 홈페이지에서 용도별로 자동 맞춤됩니다.</span>
+      </div>
+      <div class="fpft-helpitem">
+        <strong>③ 교수 계정 전용</strong>
+        <span>OAuth Worker의 관리자 허용목록에 등록된 GitHub 계정만 로그인할 수 있도록 분리되어 있습니다.</span>
+      </div>
+    </section>
+
+    <main id="nc-root" aria-label="FPFT Lab Professor CMS"></main>
+  </div>
+
+  <script>
+    const placeholder='REPLACE_WITH_OAUTH_WORKER_URL';
+    function addScript(src,onload){const script=document.createElement('script');script.src=src;script.defer=true;if(onload)script.addEventListener('load',onload,{once:true});document.body.appendChild(script);}
+    async function boot(){
+      const preflight=document.getElementById('preflight');
+      const shell=document.getElementById('admin-shell');
+      try{
+        const config=await fetch('./config.yml',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`config.yml (${r.status})`);return r.text();});
+        if(config.includes(placeholder)){
+          preflight.innerHTML='<main class="card"><div class="brand">CNU FPFT Lab</div><h1>편집기 인증 설정이 필요합니다.</h1><p>Cloudflare OAuth Worker 주소를 manage/config.yml에 연결해 주세요.</p></main>';
+          return;
+        }
+        preflight.remove();shell.hidden=false;
+        addScript('../admin/admin-ui.js?v=20261002b',()=>addScript('https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js'));
+      }catch(error){console.error(error);preflight.innerHTML='<main class="card"><div class="brand">CNU FPFT Lab</div><h1>설정 파일을 읽지 못했습니다.</h1><p>manage/config.yml을 확인해 주세요.</p><div class="links"><a class="secondary" href="/">홈페이지로 돌아가기</a></div></main>';}
+    }
+    boot();
+  </script>
+</body>
+</html>
