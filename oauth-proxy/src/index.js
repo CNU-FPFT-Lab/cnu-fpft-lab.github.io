@@ -24,22 +24,39 @@ async function hmac(value, secret) {
   return base64url(new Uint8Array(sig));
 }
 
-async function createState(secret) {
-  const payload = `${randomToken()}.${Math.floor(Date.now() / 1000)}`;
+async function createState(secret, role) {
+  const payload = `${role}.${randomToken()}.${Math.floor(Date.now() / 1000)}`;
   return `${payload}.${await hmac(payload, secret)}`;
 }
 
 async function verifyState(state, secret) {
-  if (!state || !secret) return false;
+  if (!state || !secret) return null;
   const parts = state.split('.');
-  if (parts.length !== 3) return false;
-  const [nonce, timestamp, signature] = parts;
-  const ts = Number(timestamp);
-  if (!nonce || !Number.isFinite(ts)) return false;
-  const now = Math.floor(Date.now() / 1000);
-  if (Math.abs(now - ts) > 600) return false;
-  const expected = await hmac(`${nonce}.${timestamp}`, secret);
-  return signature === expected;
+
+  // New role-aware state: role.nonce.timestamp.signature
+  if (parts.length === 4) {
+    const [role, nonce, timestamp, signature] = parts;
+    if (!['student', 'manager'].includes(role)) return null;
+    const ts = Number(timestamp);
+    if (!nonce || !Number.isFinite(ts)) return null;
+    const now = Math.floor(Date.now() / 1000);
+    if (Math.abs(now - ts) > 600) return null;
+    const expected = await hmac(`${role}.${nonce}.${timestamp}`, secret);
+    return signature === expected ? role : null;
+  }
+
+  // Backward compatibility for an authentication window opened before redeploy.
+  if (parts.length === 3) {
+    const [nonce, timestamp, signature] = parts;
+    const ts = Number(timestamp);
+    if (!nonce || !Number.isFinite(ts)) return null;
+    const now = Math.floor(Date.now() / 1000);
+    if (Math.abs(now - ts) > 600) return null;
+    const expected = await hmac(`${nonce}.${timestamp}`, secret);
+    return signature === expected ? 'student' : null;
+  }
+
+  return null;
 }
 
 function required(env) {
@@ -96,10 +113,11 @@ async function exchangeCode(url, env, code) {
   return data.access_token;
 }
 
-async function checkAllowlist(token, env) {
-  const raw = (env.ALLOWED_GITHUB_USERS || '').trim();
-  if (!raw) return true;
-  const allowed = new Set(raw.split(',').map((x) => x.trim().toLowerCase()).filter(Boolean));
+function parseUsers(raw = '') {
+  return new Set(String(raw).split(',').map((x) => x.trim().toLowerCase()).filter(Boolean));
+}
+
+async function githubLogin(token) {
   const response = await fetch('https://api.github.com/user', {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -108,30 +126,51 @@ async function checkAllowlist(token, env) {
       'X-GitHub-Api-Version': '2022-11-28'
     }
   });
-  if (!response.ok) return false;
+  if (!response.ok) return '';
   const user = await response.json();
-  return allowed.has(String(user.login || '').toLowerCase());
+  return String(user.login || '').toLowerCase();
+}
+
+function roleFromAuthRequest(url, env) {
+  const requested = url.searchParams.get('role');
+  if (requested === 'manager' || requested === 'student') return requested;
+
+  const siteId = String(url.searchParams.get('site_id') || '').trim();
+  if (env.MANAGER_SITE_ID && siteId === env.MANAGER_SITE_ID) return 'manager';
+  if (siteId.includes('/manage')) return 'manager';
+  return 'student';
+}
+
+async function checkRoleAllowlist(token, role, env) {
+  const login = await githubLogin(token);
+  if (!login) return { allowed: false, login: '' };
+
+  const managers = parseUsers(env.MANAGER_GITHUB_USERS || '');
+  const students = parseUsers(env.STUDENT_GITHUB_USERS || env.ALLOWED_GITHUB_USERS || '');
+
+  if (role === 'manager') {
+    return { allowed: managers.has(login), login };
+  }
+
+  // Professor/manager accounts can also use the shared student editor.
+  return { allowed: managers.has(login) || students.has(login), login };
 }
 
 async function handleAuth(url, env) {
   const provider = url.searchParams.get('provider');
   if (provider !== 'github') return new Response('Invalid provider', { status: 400 });
 
-  const siteId = url.searchParams.get('site_id');
-  if (env.ALLOWED_SITE_ID && siteId && siteId !== env.ALLOWED_SITE_ID) {
-    return new Response('Invalid site', { status: 403 });
-  }
-
   const missing = required(env);
   if (missing.length) return new Response(`Worker secrets are not configured: ${missing.join(', ')}`, { status: 503 });
 
+  const role = roleFromAuthRequest(url, env);
   const redirectUri = `${url.origin}/callback?provider=github`;
   const scope = env.GITHUB_REPO_PRIVATE === '1' ? 'repo read:user' : 'public_repo read:user';
   const authorize = new URL('https://github.com/login/oauth/authorize');
   authorize.searchParams.set('client_id', env.GITHUB_OAUTH_ID);
   authorize.searchParams.set('redirect_uri', redirectUri);
   authorize.searchParams.set('scope', scope);
-  authorize.searchParams.set('state', await createState(env.STATE_SECRET));
+  authorize.searchParams.set('state', await createState(env.STATE_SECRET, role));
   return Response.redirect(authorize.toString(), 302);
 }
 
@@ -143,14 +182,19 @@ async function handleCallback(url, env) {
 
   const code = url.searchParams.get('code');
   const state = url.searchParams.get('state');
-  if (!code || !(await verifyState(state, env.STATE_SECRET))) {
+  const role = await verifyState(state, env.STATE_SECRET);
+  if (!code || !role) {
     return callbackPage(env, 'error', { error: 'OAuth state validation failed' });
   }
 
   try {
     const token = await exchangeCode(url, env, code);
-    if (!(await checkAllowlist(token, env))) {
-      return callbackPage(env, 'error', { error: 'This GitHub account is not allowed to use the FPFT Lab editor.' });
+    const access = await checkRoleAllowlist(token, role, env);
+    if (!access.allowed) {
+      const message = role === 'manager'
+        ? '이 GitHub 계정은 교수용 전체 관리자에 허용되지 않았습니다.'
+        : '이 GitHub 계정은 FPFT Lab 간편 관리자에 허용되지 않았습니다.';
+      return callbackPage(env, 'error', { error: message });
     }
     return callbackPage(env, 'success', { token });
   } catch (error) {
