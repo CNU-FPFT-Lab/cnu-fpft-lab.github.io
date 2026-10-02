@@ -21,9 +21,33 @@ media_library:
     max_file_size: 15000000
 
 collections:
+  - label: "공지사항"
+    name: "notices"
+    description: "홈 화면에 표시되는 공지사항을 간단히 추가·수정합니다."
+    editor:
+      preview: false
+    files:
+      - label: "공지사항 목록"
+        name: "notice_list"
+        file: "data/notices.json"
+        fields:
+          - label: "공지"
+            name: "items"
+            widget: "list"
+            add_to_top: true
+            collapsed: true
+            summary: "{{fields.date}} · {{fields.title}}"
+            label_singular: "공지 추가"
+            fields:
+              - {label: "날짜", name: "date", widget: "string", hint: "예: 2026.10.02"}
+              - {label: "제목", name: "title", widget: "string"}
+              - {label: "짧은 요약", name: "meta", widget: "string", required: false}
+              - {label: "상세 내용", name: "detail", widget: "text", required: false}
+              - {label: "문의 이메일", name: "email", widget: "string", required: false}
+
   - label: "논문"
     name: "publications"
-    description: "논문을 추가·수정·삭제합니다. 새 논문은 목록 맨 위에 추가하세요."
+    description: "논문 서지정보를 추가·수정합니다. 새 논문은 목록 맨 위에 추가하세요."
     editor:
       preview: false
     files:
@@ -40,11 +64,11 @@ collections:
               label: "서지정보"
               name: "entry"
               widget: "text"
-              hint: "형식: [번호] 저자 (연도). 논문제목. 저널, 권(호), 페이지. 예: [20] Kim, E. (2026). Title. Food Chemistry, 100, 12345."
+              hint: "형식: [번호] 저자 (연도). 논문제목. 저널, 권(호), 페이지."
 
   - label: "연구실 활동·사진"
     name: "activities"
-    description: "목록에는 사진과 제목만 표시되며, 클릭 후 상세 페이지에서 기간·장소·설명을 보여줍니다."
+    description: "학회, 수상, 연구실 활동과 대표 사진을 관리합니다."
     editor:
       preview: false
     files:
@@ -63,7 +87,7 @@ collections:
               - {label: "ID", name: "id", widget: "string", hint: "영문 소문자와 하이픈 권장. 예: conference-busan-2027"}
               - {label: "기간·날짜", name: "date", widget: "string", hint: "예: 2026.10.01 또는 2026.07.22–24"}
               - {label: "제목", name: "title", widget: "string"}
-              - {label: "분류", name: "type", widget: "string", required: false, hint: "예: Conference · Award / Lab Activity"}
+              - {label: "분류", name: "type", widget: "string", required: false, hint: "예: 학회 · 수상 / 연구실 활동"}
               - {label: "장소", name: "location", widget: "string", required: false}
               - {label: "세부 설명", name: "detail", widget: "text", required: false}
               - label: "대표 사진"
@@ -71,58 +95,11 @@ collections:
                 widget: "image"
                 choose_url: false
                 allow_multiple: false
-                hint: "원본 사진을 그대로 업로드하세요. 목록에서는 16:10 비율로 자동 맞춤되고, 상세 페이지에서는 전체 사진이 보입니다. 드래그앤드롭 또는 파일 선택을 사용할 수 있습니다."
-
-  - label: "구성원"
-    name: "members"
-    description: "연구책임자와 학생 정보를 관리합니다. 학생 사진은 선택사항입니다."
-    editor:
-      preview: false
-    files:
-      - label: "구성원 목록"
-        name: "member_list"
-        file: "data/members.json"
-        fields:
-          - label: "연구책임자"
-            name: "pi"
-            widget: "object"
-            collapsed: true
-            fields:
-              - {label: "이름", name: "name", widget: "string"}
-              - {label: "영문명", name: "name_en", widget: "string"}
-              - {label: "직위", name: "role", widget: "string"}
-              - {label: "이메일", name: "email", widget: "string"}
-              - {label: "전화", name: "phone", widget: "string"}
-              - {label: "교수실", name: "office", widget: "string"}
-              - label: "프로필 사진"
-                name: "photo"
-                widget: "image"
-                choose_url: false
-                allow_multiple: false
-                hint: "세로 사진을 권장합니다. 원본을 그대로 업로드하면 홈페이지에서 프로필 프레임에 자동으로 맞춰집니다."
-              - {label: "소개", name: "intro", widget: "text", required: false}
-          - label: "학생"
-            name: "students"
-            widget: "list"
-            collapsed: true
-            summary: "{{fields.name}} · {{fields.course}}"
-            label_singular: "학생 추가"
-            fields:
-              - {label: "이름", name: "name", widget: "string"}
-              - {label: "영문명", name: "name_en", widget: "string"}
-              - {label: "과정", name: "course", widget: "select", options: ["석사 과정", "박사 과정", "학·석사 연계과정", "학부연구생", "졸업생"]}
-              - {label: "이메일", name: "email", widget: "string"}
-              - label: "프로필 사진"
-                name: "photo"
-                widget: "image"
-                required: false
-                choose_url: false
-                allow_multiple: false
-                hint: "선택사항입니다. 세로 사진을 권장하며 원본 그대로 업로드하면 자동으로 맞춰집니다."
+                hint: "원본 사진을 그대로 업로드하세요. 드래그앤드롭 또는 파일 선택을 사용할 수 있습니다."
 
   - label: "연구과제"
     name: "projects"
-    description: "현재 수행 중이거나 공개할 연구과제를 관리합니다."
+    description: "공개 중인 연구과제의 기관, 사업, 기간, 역할을 관리합니다."
     editor:
       preview: false
     files:
@@ -138,57 +115,10 @@ collections:
             summary: "{{fields.title}} · {{fields.role}}"
             label_singular: "과제 추가"
             fields:
-              - {label: "역할", name: "role", widget: "select", options: ["연구책임", "공동연구", "참여연구"]}
               - {label: "상태", name: "status", widget: "select", options: ["수행 중", "완료", "예정"]}
-              - {label: "기간", name: "period", widget: "string", required: false, hint: "예: 2026.07–2027.01"}
+              - {label: "지원기관", name: "agency", widget: "string", required: false}
+              - {label: "지원사업", name: "program", widget: "string", required: false}
+              - {label: "기간", name: "period", widget: "string", required: false, hint: "예: 2026.09.01–2027.08.31"}
               - {label: "과제명", name: "title", widget: "string"}
-              - {label: "설명", name: "detail", widget: "text"}
-
-  - label: "연구분야"
-    name: "research"
-    description: "Research 페이지의 연구분야, 대표 인포그래픽, 세부 주제를 관리합니다."
-    editor:
-      preview: false
-    files:
-      - label: "연구분야"
-        name: "research_list"
-        file: "data/research.json"
-        fields:
-          - label: "연구분야"
-            name: "items"
-            widget: "list"
-            collapsed: true
-            summary: "{{fields.number}} · {{fields.title}}"
-            fields:
-              - {label: "ID", name: "id", widget: "string", hint: "URL 식별자입니다. 기존 값은 가능하면 변경하지 마세요."}
-              - {label: "번호", name: "number", widget: "string"}
-              - {label: "제목", name: "title", widget: "string"}
-              - {label: "보조 제목", name: "title_en", widget: "string", required: false, hint: "중복 제목이 필요하지 않으면 비워두세요."}
-              - {label: "설명", name: "summary", widget: "text", required: false}
-              - label: "대표 인포그래픽"
-                name: "overview_figure"
-                widget: "image"
-                required: false
-                choose_url: false
-                allow_multiple: false
-                hint: "원본 이미지를 그대로 업로드하세요. 가로 1500 px 이상을 권장합니다. PNG/JPG/WebP/AVIF 모두 사용할 수 있으며 홈페이지에서 비율을 유지한 채 자동 축소됩니다."
-              - label: "연구 흐름"
-                name: "flow"
-                widget: "list"
-                required: false
-                field: {label: "단계", name: "step", widget: "string"}
-              - label: "세부 연구주제"
-                name: "topics"
-                widget: "list"
-                collapsed: true
-                summary: "{{fields.title}}"
-                fields:
-                  - {label: "주제명", name: "title", widget: "string"}
-                  - {label: "키워드", name: "detail", widget: "string"}
-                  - label: "연구 Figure"
-                    name: "figure"
-                    widget: "image"
-                    required: false
-                    choose_url: false
-                    allow_multiple: false
-                    hint: "해당 연구주제 상단에 표시할 그림입니다. 원본 비율을 유지해 자동으로 화면 크기에 맞춰집니다."
+              - {label: "참여형태", name: "participation", widget: "string", required: false, hint: "예: 책임 / 공동"}
+              - {label: "역할", name: "role", widget: "string", required: false, hint: "예: 연구책임자 / 공동연구원"}
