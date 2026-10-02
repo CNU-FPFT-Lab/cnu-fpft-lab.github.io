@@ -4,36 +4,91 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>FPFT Lab 콘텐츠 편집</title>
-  <style>
-    :root{--green:#007a33;--blue:#003594;--ink:#18201b;--muted:#68716b;--line:#dfe6e1;--soft:#f4f7f5}
-    *{box-sizing:border-box}body{margin:0;font-family:Inter,"Pretendard","Noto Sans KR",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--soft)}
-    .setup{min-height:100vh;display:grid;place-items:center;padding:32px}.card{width:min(820px,100%);background:#fff;border:1px solid var(--line);border-top:5px solid var(--green);border-radius:10px;padding:36px;box-shadow:0 18px 55px rgba(13,37,25,.09)}
-    .brand{font-weight:800;color:var(--green);font-size:13px;letter-spacing:.08em;text-transform:uppercase}.card h1{font-size:32px;line-height:1.2;margin:10px 0 12px}.card p{color:var(--muted);line-height:1.7}.steps{counter-reset:item;margin:26px 0 0;padding:0;list-style:none}.steps li{position:relative;padding:14px 0 14px 44px;border-top:1px solid var(--line);line-height:1.6}.steps li::before{counter-increment:item;content:counter(item);position:absolute;left:0;top:13px;width:28px;height:28px;border-radius:50%;background:#e7f4ec;color:var(--green);display:grid;place-items:center;font-size:12px;font-weight:800}.code{display:block;background:#111814;color:#e6f1ea;padding:12px 14px;border-radius:6px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;overflow:auto;margin-top:8px}.note{margin-top:22px;padding:14px 16px;background:#f3f6fb;border-left:3px solid var(--blue);color:#4a5662;font-size:13px}.links{margin-top:24px;display:flex;gap:10px;flex-wrap:wrap}.links a{display:inline-block;padding:10px 14px;border-radius:5px;font-size:13px;font-weight:700;text-decoration:none}.primary{background:var(--green);color:#fff}.secondary{border:1px solid var(--line);color:var(--ink);background:#fff}
-  </style>
+  <meta name="theme-color" content="#007a33">
+  <title>FPFT Lab 콘텐츠 관리</title>
+  <link rel="stylesheet" href="./admin.css?v=20261002a">
 </head>
 <body>
   <div id="preflight" class="setup">
-    <main class="card"><div class="brand">CNU FPFT Lab</div><h1>콘텐츠 편집기 설정 확인 중</h1><p>GitHub OAuth 연결 상태를 확인하고 있습니다.</p></main>
+    <main class="card">
+      <div class="brand">CNU FPFT Lab</div>
+      <h1>콘텐츠 편집기 설정 확인 중</h1>
+      <p>GitHub 로그인과 편집기 연결 상태를 확인하고 있습니다.</p>
+    </main>
   </div>
+
+  <div id="admin-shell" hidden>
+    <header class="fpft-adminbar">
+      <div class="fpft-adminbrand">
+        <div class="fpft-adminmark" aria-hidden="true">FPFT</div>
+        <div>
+          <strong>FPFT Lab 콘텐츠 관리</strong>
+          <span>홈페이지의 논문 · 활동 · 구성원 · 연구과제 · 연구분야를 수정합니다.</span>
+        </div>
+      </div>
+      <div class="fpft-adminactions">
+        <button id="fpft-help-toggle" type="button" aria-expanded="true">사용 안내 닫기</button>
+        <a href="/" target="_blank" rel="noopener">홈페이지 보기 ↗</a>
+        <a class="is-primary" href="https://github.com/CNU-FPFT-Lab/cnu-fpft-lab.github.io" target="_blank" rel="noopener">GitHub 저장소 ↗</a>
+      </div>
+    </header>
+
+    <section class="fpft-adminhelp" id="fpft-adminhelp" aria-label="편집기 사용 안내">
+      <div class="fpft-helpitem">
+        <strong>① 필요한 메뉴만 선택</strong>
+        <span>왼쪽 메뉴에서 논문, 활동, 구성원, 연구과제, 연구분야 중 수정할 항목을 선택하세요.</span>
+      </div>
+      <div class="fpft-helpitem">
+        <strong>② 이미지는 원본 그대로 업로드</strong>
+        <span>이미지 크기를 따로 줄이지 않아도 됩니다. 홈페이지에서 용도에 맞게 자동으로 맞춰 표시됩니다.</span>
+      </div>
+      <div class="fpft-helpitem">
+        <strong>③ 업로드는 드래그 또는 파일 선택</strong>
+        <span>업로드 창에서 파일을 끌어다 놓거나 ‘파일 선택’ 버튼을 눌러 컴퓨터에서 첨부하세요.</span>
+      </div>
+    </section>
+
+    <main id="nc-root" aria-label="FPFT Lab CMS"></main>
+  </div>
+
   <script>
     const placeholder = 'REPLACE_WITH_OAUTH_WORKER_URL';
+
+    function addScript(src, onload){
+      const script = document.createElement('script');
+      script.src = src;
+      script.defer = true;
+      if(onload) script.addEventListener('load', onload, {once:true});
+      document.body.appendChild(script);
+    }
+
     async function boot(){
-      const root = document.getElementById('preflight');
+      const preflight = document.getElementById('preflight');
+      const shell = document.getElementById('admin-shell');
       try{
-        const config = await fetch('./config.yml',{cache:'no-store'}).then(r=>r.text());
+        const config = await fetch('./config.yml',{cache:'no-store'}).then(r=>{
+          if(!r.ok) throw new Error(`config.yml (${r.status})`);
+          return r.text();
+        });
+
         if(config.includes(placeholder)){
-          root.innerHTML = `<main class="card"><div class="brand">CNU FPFT Lab</div><h1>무료 다중 사용자 편집기 준비 완료</h1><p>Decap CMS는 GitHub OAuth + 자체 Cloudflare Worker 인증 방식으로 전환되었습니다. 저장소 쪽 구성은 완료되었고, 최초 1회 GitHub OAuth App 등록과 Worker 배포만 남아 있습니다.</p><ol class="steps"><li>GitHub에서 OAuth App을 하나 생성합니다. Homepage URL은 <span class="code">https://cnu-fpft-lab.github.io/</span>로 입력합니다.</li><li>Cloudflare Workers에서 <strong>oauth-proxy/</strong> 폴더의 Worker를 배포합니다. 배포 후 주소는 보통 <span class="code">https://cnu-fpft-decap-oauth.&lt;계정명&gt;.workers.dev</span> 형태입니다.</li><li>GitHub OAuth App의 Authorization callback URL을 Worker 주소 + <span class="code">/callback?provider=github</span>로 정확히 등록합니다.</li><li>Worker에 GitHub OAuth Client ID, Client Secret, 임의의 긴 STATE_SECRET을 secret으로 등록합니다.</li><li>마지막으로 <strong>admin/config.yml</strong>의 <span class="code">base_url: ${placeholder}</span>를 실제 Worker 주소로 교체합니다.</li></ol><div class="note">학생은 각자 자신의 GitHub 계정으로 로그인합니다. 해당 학생 계정에는 CNU-FPFT-Lab/cnu-fpft-lab.github.io 저장소의 push 권한이 있어야 실제 저장이 가능합니다.</div><div class="links"><a class="primary" href="https://github.com/settings/developers" target="_blank" rel="noopener">GitHub OAuth Apps ↗</a><a class="secondary" href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare Dashboard ↗</a><a class="secondary" href="/">홈페이지</a></div></main>`;
+          preflight.innerHTML = `<main class="card"><div class="brand">CNU FPFT Lab</div><h1>편집기 인증 설정이 필요합니다.</h1><p>저장소의 Decap CMS 구성은 준비되어 있지만 GitHub OAuth Worker 주소가 아직 연결되지 않았습니다.</p><ol class="steps"><li>GitHub OAuth App을 생성합니다. Homepage URL은 <span class="code">https://cnu-fpft-lab.github.io/</span>로 입력합니다.</li><li>Cloudflare Workers에서 <strong>oauth-proxy/</strong> 폴더의 Worker를 배포합니다.</li><li>Authorization callback URL을 Worker 주소 + <span class="code">/callback?provider=github</span>로 등록합니다.</li><li>Worker에 GitHub OAuth Client ID, Client Secret, STATE_SECRET을 등록합니다.</li><li><strong>admin/config.yml</strong>의 base_url을 실제 Worker 주소로 교체합니다.</li></ol><div class="note">학생 계정에는 CNU-FPFT-Lab/cnu-fpft-lab.github.io 저장소의 push 권한이 있어야 저장할 수 있습니다.</div><div class="links"><a class="primary" href="https://github.com/settings/developers" target="_blank" rel="noopener">GitHub OAuth Apps ↗</a><a class="secondary" href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare Dashboard ↗</a><a class="secondary" href="/">홈페이지</a></div></main>`;
           return;
         }
-        root.remove();
-        const script=document.createElement('script');
-        script.src='https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js';
-        document.body.appendChild(script);
-      }catch(e){
-        root.innerHTML='<main class="card"><div class="brand">CNU FPFT Lab</div><h1>설정 파일을 읽지 못했습니다.</h1><p>잠시 후 다시 시도하거나 GitHub의 <strong>admin/config.yml</strong>을 확인해 주세요.</p></main>';
+
+        preflight.remove();
+        shell.hidden = false;
+
+        // Load the UI helper first so it can enhance file inputs as soon as Decap creates them.
+        addScript('./admin-ui.js?v=20261002a', () => {
+          addScript('https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js');
+        });
+      }catch(error){
+        console.error(error);
+        preflight.innerHTML = '<main class="card"><div class="brand">CNU FPFT Lab</div><h1>설정 파일을 읽지 못했습니다.</h1><p>잠시 후 다시 시도하거나 GitHub의 <strong>admin/config.yml</strong>을 확인해 주세요.</p><div class="links"><a class="secondary" href="/">홈페이지로 돌아가기</a></div></main>';
       }
     }
+
     boot();
   </script>
 </body>
