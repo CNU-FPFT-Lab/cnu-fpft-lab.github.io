@@ -1,0 +1,1 @@
+High-resolution research infographic source images are stored as native WebP assets. Text chunk files in this directory are legacy intermediates and are not used by the current renderer.
