@@ -1,15 +1,14 @@
-/* Quiet, information-first treatment for the Research Projects list. */
+/* Conventional, information-first treatment for Research Projects. */
 #projects .section-head{margin-bottom:24px}
 .project-list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
-.project-row{display:grid;grid-template-columns:84px minmax(0,1fr) 238px;gap:24px;align-items:start;padding:24px 0;border-bottom:1px solid var(--line)}
-.project-status{display:block;width:auto;padding:2px 0 0;border-radius:0;background:none;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.01em}
-.project-status.is-past{background:none;color:var(--muted)}
-.project-program{margin:0 0 5px;font-size:12px;font-weight:600;color:var(--muted)}
-.project-main h3{font-size:18px;line-height:1.5;margin:0;font-weight:600;letter-spacing:-.01em}
-.project-detail{margin:7px 0 0;color:var(--muted);font-size:13px;line-height:1.6}
-.project-meta{margin:1px 0 0;display:grid;gap:7px}
-.project-meta div{display:grid;grid-template-columns:54px 1fr;gap:10px}
-.project-meta dt{font-size:11px;color:#8a918d;font-weight:500}
-.project-meta dd{margin:0;font-size:12px;font-weight:500;color:#4e5651}
-@media(max-width:980px){.project-row{grid-template-columns:72px minmax(0,1fr)}.project-meta{grid-column:2}}
-@media(max-width:760px){.project-row{grid-template-columns:1fr;gap:9px;padding:20px 0}.project-meta{grid-column:auto;margin-top:3px}.project-meta div{grid-template-columns:50px 1fr}}
+.project-entry{padding:24px 0;border-bottom:1px solid var(--line)}
+.project-entry-head{display:grid;grid-template-columns:78px minmax(0,1fr);gap:24px;align-items:start}
+.project-status{display:block;padding-top:4px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.01em}
+.project-status.is-past{color:var(--muted)}
+.project-entry h3{margin:0;font-size:18px;line-height:1.55;font-weight:650;letter-spacing:-.01em}
+.project-facts{margin:18px 0 0 102px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 34px}
+.project-facts div{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;align-items:start}
+.project-facts dt{font-size:11px;color:#8a918d;font-weight:600;line-height:1.55}
+.project-facts dd{margin:0;font-size:13px;line-height:1.55;color:#4e5651;font-weight:500}
+@media(max-width:900px){.project-facts{grid-template-columns:1fr}}
+@media(max-width:760px){.project-entry{padding:20px 0}.project-entry-head{grid-template-columns:1fr;gap:6px}.project-status{padding-top:0}.project-facts{margin:14px 0 0;grid-template-columns:1fr}.project-facts div{grid-template-columns:68px minmax(0,1fr)}}
