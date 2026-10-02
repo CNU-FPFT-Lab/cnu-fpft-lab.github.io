@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#007a33">
-  <title>FPFT Lab 콘텐츠 관리</title>
-  <link rel="stylesheet" href="./admin.css?v=20261002a">
+  <title>FPFT Lab 간편 관리</title>
+  <link rel="stylesheet" href="./admin.css?v=20261002b">
 </head>
-<body>
+<body data-admin-mode="student">
   <div id="preflight" class="setup">
     <main class="card">
       <div class="brand">CNU FPFT Lab</div>
-      <h1>콘텐츠 편집기 설정 확인 중</h1>
+      <h1>간편 편집기 설정 확인 중</h1>
       <p>GitHub 로그인과 편집기 연결 상태를 확인하고 있습니다.</p>
     </main>
   </div>
@@ -22,73 +22,51 @@
       <div class="fpft-adminbrand">
         <div class="fpft-adminmark" aria-hidden="true">FPFT</div>
         <div>
-          <strong>FPFT Lab 콘텐츠 관리</strong>
-          <span>홈페이지의 논문 · 활동 · 구성원 · 연구과제 · 연구분야를 수정합니다.</span>
+          <strong>FPFT Lab 간편 관리</strong>
+          <span>교수·학생 공용 · 공지사항 · 논문 · 연구실 활동 · 연구과제</span>
         </div>
       </div>
       <div class="fpft-adminactions">
         <button id="fpft-help-toggle" type="button" aria-expanded="true">사용 안내 닫기</button>
         <a href="/" target="_blank" rel="noopener">홈페이지 보기 ↗</a>
-        <a class="is-primary" href="https://github.com/CNU-FPFT-Lab/cnu-fpft-lab.github.io" target="_blank" rel="noopener">GitHub 저장소 ↗</a>
+        <a href="/manage/">교수용 전체 관리</a>
       </div>
     </header>
 
     <section class="fpft-adminhelp" id="fpft-adminhelp" aria-label="편집기 사용 안내">
       <div class="fpft-helpitem">
-        <strong>① 필요한 메뉴만 선택</strong>
-        <span>왼쪽 메뉴에서 논문, 활동, 구성원, 연구과제, 연구분야 중 수정할 항목을 선택하세요.</span>
+        <strong>① 자주 바꾸는 내용만 관리</strong>
+        <span>공지사항, 논문, 연구실 활동, 연구과제만 노출됩니다. 연구구조와 PI 정보 같은 고급 항목은 교수용 전체 관리에서 수정합니다.</span>
       </div>
       <div class="fpft-helpitem">
         <strong>② 이미지는 원본 그대로 업로드</strong>
         <span>이미지 크기를 따로 줄이지 않아도 됩니다. 홈페이지에서 용도에 맞게 자동으로 맞춰 표시됩니다.</span>
       </div>
       <div class="fpft-helpitem">
-        <strong>③ 업로드는 드래그 또는 파일 선택</strong>
-        <span>업로드 창에서 파일을 끌어다 놓거나 ‘파일 선택’ 버튼을 눌러 컴퓨터에서 첨부하세요.</span>
+        <strong>③ 드래그 또는 파일 선택</strong>
+        <span>업로드 창에 파일을 끌어다 놓거나 ‘파일 선택’ 버튼으로 컴퓨터에서 첨부할 수 있습니다.</span>
       </div>
     </section>
 
-    <main id="nc-root" aria-label="FPFT Lab CMS"></main>
+    <main id="nc-root" aria-label="FPFT Lab Shared CMS"></main>
   </div>
 
   <script>
     const placeholder = 'REPLACE_WITH_OAUTH_WORKER_URL';
-
-    function addScript(src, onload){
-      const script = document.createElement('script');
-      script.src = src;
-      script.defer = true;
-      if(onload) script.addEventListener('load', onload, {once:true});
-      document.body.appendChild(script);
-    }
-
+    function addScript(src,onload){const script=document.createElement('script');script.src=src;script.defer=true;if(onload)script.addEventListener('load',onload,{once:true});document.body.appendChild(script);}
     async function boot(){
-      const preflight = document.getElementById('preflight');
-      const shell = document.getElementById('admin-shell');
+      const preflight=document.getElementById('preflight');
+      const shell=document.getElementById('admin-shell');
       try{
-        const config = await fetch('./config.yml',{cache:'no-store'}).then(r=>{
-          if(!r.ok) throw new Error(`config.yml (${r.status})`);
-          return r.text();
-        });
-
+        const config=await fetch('./config.yml',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`config.yml (${r.status})`);return r.text();});
         if(config.includes(placeholder)){
-          preflight.innerHTML = `<main class="card"><div class="brand">CNU FPFT Lab</div><h1>편집기 인증 설정이 필요합니다.</h1><p>저장소의 Decap CMS 구성은 준비되어 있지만 GitHub OAuth Worker 주소가 아직 연결되지 않았습니다.</p><ol class="steps"><li>GitHub OAuth App을 생성합니다. Homepage URL은 <span class="code">https://cnu-fpft-lab.github.io/</span>로 입력합니다.</li><li>Cloudflare Workers에서 <strong>oauth-proxy/</strong> 폴더의 Worker를 배포합니다.</li><li>Authorization callback URL을 Worker 주소 + <span class="code">/callback?provider=github</span>로 등록합니다.</li><li>Worker에 GitHub OAuth Client ID, Client Secret, STATE_SECRET을 등록합니다.</li><li><strong>admin/config.yml</strong>의 base_url을 실제 Worker 주소로 교체합니다.</li></ol><div class="note">학생 계정에는 CNU-FPFT-Lab/cnu-fpft-lab.github.io 저장소의 push 권한이 있어야 저장할 수 있습니다.</div><div class="links"><a class="primary" href="https://github.com/settings/developers" target="_blank" rel="noopener">GitHub OAuth Apps ↗</a><a class="secondary" href="https://dash.cloudflare.com/" target="_blank" rel="noopener">Cloudflare Dashboard ↗</a><a class="secondary" href="/">홈페이지</a></div></main>`;
+          preflight.innerHTML='<main class="card"><div class="brand">CNU FPFT Lab</div><h1>편집기 인증 설정이 필요합니다.</h1><p>Cloudflare OAuth Worker 주소를 admin/config.yml에 연결해 주세요.</p></main>';
           return;
         }
-
-        preflight.remove();
-        shell.hidden = false;
-
-        // Load the UI helper first so it can enhance file inputs as soon as Decap creates them.
-        addScript('./admin-ui.js?v=20261002a', () => {
-          addScript('https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js');
-        });
-      }catch(error){
-        console.error(error);
-        preflight.innerHTML = '<main class="card"><div class="brand">CNU FPFT Lab</div><h1>설정 파일을 읽지 못했습니다.</h1><p>잠시 후 다시 시도하거나 GitHub의 <strong>admin/config.yml</strong>을 확인해 주세요.</p><div class="links"><a class="secondary" href="/">홈페이지로 돌아가기</a></div></main>';
-      }
+        preflight.remove();shell.hidden=false;
+        addScript('./admin-ui.js?v=20261002b',()=>addScript('https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js'));
+      }catch(error){console.error(error);preflight.innerHTML='<main class="card"><div class="brand">CNU FPFT Lab</div><h1>설정 파일을 읽지 못했습니다.</h1><p>admin/config.yml을 확인해 주세요.</p><div class="links"><a class="secondary" href="/">홈페이지로 돌아가기</a></div></main>';}
     }
-
     boot();
   </script>
 </body>
