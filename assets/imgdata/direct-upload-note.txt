@@ -1,0 +1,1 @@
+Preparing native high-resolution WebP assets through Git object upload. This note can remain as documentation.
