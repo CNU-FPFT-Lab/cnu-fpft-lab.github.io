@@ -10,7 +10,9 @@ button?.addEventListener('click',()=>{
 });
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&button?.getAttribute('aria-expanded')==='true'){
-    nav?.classList.remove('open');button.setAttribute('aria-expanded','false');button.textContent='Menu';
+    nav?.classList.remove('open');
+    button.setAttribute('aria-expanded','false');
+    button.textContent='Menu';
   }
 });
 document.querySelectorAll('.nav-group > button').forEach(btn=>btn.addEventListener('click',()=>btn.parentElement.classList.toggle('open')));
@@ -23,14 +25,19 @@ const homeTitle=document.querySelector('.home-hero h1');
 if(homeTitle)homeTitle.textContent='식품가공및푸드테크연구실';
 document.querySelector('.home-keywords')?.remove();
 
-async function getJSON(path){const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw new Error(`${path} (${r.status})`);return r.json();}
+async function getJSON(path){
+  const r=await fetch(path,{cache:'no-store'});
+  if(!r.ok)throw new Error(`${path} (${r.status})`);
+  return r.json();
+}
 function asItems(v){return Array.isArray(v)?v:(v&&Array.isArray(v.items)?v.items:[]);}
 function showError(el){if(el)el.innerHTML='<div class="data-error">데이터를 불러오지 못했습니다. 잠시 후 다시 확인해주세요.</div>';}
 function escapeHTML(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function lines(v=''){return escapeHTML(v).replace(/\n/g,'<br>');}
 
-// Keep image bytes as base64 text in GitHub. The large research infographics are
-// split into small text chunks and reassembled in the browser to avoid binary corruption.
+// Legacy image fallback. Newly uploaded images should be ordinary PNG/JPG/WebP/AVIF
+// files referenced from JSON. These base64 assets are kept only so the current
+// research infographics and PI portrait continue to work until they are replaced.
 const imageDataFiles={
   processing:[
     'assets/image-data/processing-hq-01.b64',
@@ -54,6 +61,7 @@ const imageDataFiles={
 const imageMime={processing:'image/avif',foodtech:'image/avif',pi:'image/webp'};
 const imageDataCache={};
 const transparentPixel='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+
 async function getImageData(key){
   const files=imageDataFiles[key];
   if(!files)throw new Error(`Unknown image key: ${key}`);
@@ -71,10 +79,19 @@ async function getImageData(key){
   }
   return imageDataCache[key];
 }
-async function hydrateImage(img,key){
-  if(!img)return;
-  try{img.src=await getImageData(key);}
-  catch(e){console.error('Image load failed',key,e);img.classList.add('image-load-error');}
+
+function isDirectImagePath(src=''){
+  const value=String(src||'').trim();
+  return Boolean(value)&&!value.startsWith('data:');
+}
+
+async function resolveManagedImage(src,fallbackKey=''){
+  if(isDirectImagePath(src))return String(src).trim();
+  if(fallbackKey){
+    try{return await getImageData(fallbackKey);}
+    catch(e){console.error('Fallback image load failed',fallbackKey,e);}
+  }
+  return src||transparentPixel;
 }
 
 function parsePublication(text){
@@ -93,7 +110,10 @@ async function renderLatestPublications(){
   const el=document.querySelector('[data-latest-publications]');if(!el)return;
   try{
     const data=asItems(await getJSON('data/publications.json'));
-    el.innerHTML=data.slice(0,3).map(item=>{const p=parsePublication(typeof item==='string'?item:(item.entry||''));return `<article class="pub-row"><div class="pub-year">${escapeHTML(p.year)}</div><div><h3 class="pub-title">${escapeHTML(p.title)}</h3><p class="pub-authors">${escapeHTML(p.authors)}</p></div><div class="pub-journal">${escapeHTML(p.journal)}</div></article>`;}).join('');
+    el.innerHTML=data.slice(0,3).map(item=>{
+      const p=parsePublication(typeof item==='string'?item:(item.entry||''));
+      return `<article class="pub-row"><div class="pub-year">${escapeHTML(p.year)}</div><div><h3 class="pub-title">${escapeHTML(p.title)}</h3><p class="pub-authors">${escapeHTML(p.authors)}</p></div><div class="pub-journal">${escapeHTML(p.journal)}</div></article>`;
+    }).join('');
   }catch(e){showError(el);}
 }
 
@@ -110,31 +130,56 @@ async function renderResearch(){
   const el=document.querySelector('[data-research-list]');if(!el)return;
   try{
     const data=asItems(await getJSON('data/research.json'));
-    el.innerHTML=data.map((r,i)=>{
-      const key=r.id==='processing'?'processing':r.id==='foodtech'?'foodtech':'';
-      const overview=key?`<figure class="research-overview-figure"><img src="${transparentPixel}" data-image-key="${key}" alt="${escapeHTML(r.title)} 연구 개요" loading="eager"></figure>`:'';
-      const topics=(r.topics||[]).map(t=>`<article class="topic-card"><h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`).join('');
+    const prepared=await Promise.all(data.map(async r=>{
+      const fallbackKey=r.id==='processing'?'processing':r.id==='foodtech'?'foodtech':'';
+      const overviewSrc=await resolveManagedImage(r.overview_figure,fallbackKey);
+      return {...r,overviewSrc};
+    }));
+    el.innerHTML=prepared.map((r,i)=>{
+      const overview=r.overviewSrc?`<figure class="research-overview-figure"><img class="media-contain" src="${escapeHTML(r.overviewSrc)}" alt="${escapeHTML(r.title)} 연구 개요" loading="eager" decoding="async"></figure>`:'';
+      const topics=(r.topics||[]).map(t=>{
+        const figure=t.figure?`<figure class="topic-figure"><img class="media-contain" src="${escapeHTML(t.figure)}" alt="${escapeHTML(t.title)}" loading="lazy" decoding="async"></figure>`:'';
+        return `<article class="topic-card">${figure}<h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`;
+      }).join('');
       return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2>${overview}<div class="topic-grid">${topics}</div></div></div></section>`;
     }).join('');
-    await Promise.all([...el.querySelectorAll('img[data-image-key]')].map(img=>hydrateImage(img,img.dataset.imageKey)));
   }catch(e){showError(el);}
 }
 
-const courseEN={'M.S.':'M.S. Students','Ph.D.':'Ph.D. Students','B.S.–M.S. Integrated':'B.S.–M.S. Integrated Students','Undergraduate Researcher':'Undergraduate Researchers','Alumni':'Alumni'};
-const courseLabelEN={'M.S.':'M.S. Student','Ph.D.':'Ph.D. Student','B.S.–M.S. Integrated':'B.S.–M.S. Integrated Student','Undergraduate Researcher':'Undergraduate Researcher','Alumni':'Alumni'};
-function fallbackStudentPhoto(name){const node=[...document.querySelectorAll('[data-student-photo]')].find(img=>img.dataset.studentPhoto===name);return node?.getAttribute('src')||'';}
+const courseEN={
+  'M.S.':'M.S. Students','석사 과정':'M.S. Students',
+  'Ph.D.':'Ph.D. Students','박사 과정':'Ph.D. Students',
+  'B.S.–M.S. Integrated':'B.S.–M.S. Integrated Students','학·석사 연계과정':'B.S.–M.S. Integrated Students',
+  'Undergraduate Researcher':'Undergraduate Researchers','학부연구생':'Undergraduate Researchers',
+  'Alumni':'Alumni','졸업생':'Alumni'
+};
+const courseLabelEN={
+  'M.S.':'M.S. Student','석사 과정':'M.S. Student',
+  'Ph.D.':'Ph.D. Student','박사 과정':'Ph.D. Student',
+  'B.S.–M.S. Integrated':'B.S.–M.S. Integrated Student','학·석사 연계과정':'B.S.–M.S. Integrated Student',
+  'Undergraduate Researcher':'Undergraduate Researcher','학부연구생':'Undergraduate Researcher',
+  'Alumni':'Alumni','졸업생':'Alumni'
+};
+function fallbackStudentPhoto(name){
+  const node=[...document.querySelectorAll('[data-student-photo]')].find(img=>img.dataset.studentPhoto===name);
+  return node?.getAttribute('src')||'';
+}
+
 async function renderMembers(){
   const piEl=document.querySelector('[data-pi]'),studentsEl=document.querySelector('[data-students]');if(!piEl&&!studentsEl)return;
   try{
     const data=await getJSON('data/members.json');
     if(piEl){
       const p=data.pi;
-      piEl.innerHTML=`<img src="${transparentPixel}" data-image-key="pi" alt="${escapeHTML(p.name_en||p.name)}"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
-      await hydrateImage(piEl.querySelector('img[data-image-key="pi"]'),'pi');
+      const piPhoto=await resolveManagedImage(p.photo,'pi');
+      piEl.innerHTML=`<img class="media-cover profile-photo" src="${escapeHTML(piPhoto)}" alt="${escapeHTML(p.name_en||p.name)}" loading="eager" decoding="async"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
     }
     if(studentsEl){
       const groups={};(data.students||[]).forEach(s=>(groups[s.course]||=[]).push(s));
-      studentsEl.innerHTML=Object.entries(groups).map(([course,items])=>`<h2 class="member-group-title">${escapeHTML(courseEN[course]||course)}</h2><div class="student-list">${items.map(s=>{const photo=s.photo||fallbackStudentPhoto(s.name);return `<article class="student-row">${photo?`<img class="student-portrait" src="${photo}" alt="${escapeHTML(s.name_en||s.name)}" loading="lazy">`:`<div class="student-portrait student-portrait-fallback">${escapeHTML((s.name_en||s.name).slice(0,1))}</div>`}<div class="student-info"><p class="eyebrow">${escapeHTML(courseLabelEN[course]||course)}</p><h3>${escapeHTML(s.name_en||s.name)}${s.name?` <span>${escapeHTML(s.name)}</span>`:''}</h3><a href="mailto:${escapeHTML(s.email)}">${escapeHTML(s.email)}</a></div></article>`;}).join('')}</div>`).join('');
+      studentsEl.innerHTML=Object.entries(groups).map(([course,items])=>`<h2 class="member-group-title">${escapeHTML(courseEN[course]||course)}</h2><div class="student-list">${items.map(s=>{
+        const photo=s.photo||fallbackStudentPhoto(s.name);
+        return `<article class="student-row">${photo?`<img class="student-portrait media-cover" src="${escapeHTML(photo)}" alt="${escapeHTML(s.name_en||s.name)}" loading="lazy" decoding="async">`:`<div class="student-portrait student-portrait-fallback">${escapeHTML((s.name_en||s.name).slice(0,1))}</div>`}<div class="student-info"><p class="eyebrow">${escapeHTML(courseLabelEN[course]||course)}</p><h3>${escapeHTML(s.name_en||s.name)}${s.name?` <span>${escapeHTML(s.name)}</span>`:''}</h3><a href="mailto:${escapeHTML(s.email)}">${escapeHTML(s.email)}</a></div></article>`;
+      }).join('')}</div>`).join('');
     }
   }catch(e){showError(piEl||studentsEl);}
 }
@@ -151,7 +196,10 @@ async function renderActivities(){
   const el=document.querySelector('[data-activities]');if(!el)return;
   try{
     const data=asItems(await getJSON('data/activities.json'));
-    el.innerHTML=data.map((a,i)=>{const id=a.id||String(i);return `<article class="activity-card"><a class="activity-card-link" href="activity.html?id=${encodeURIComponent(id)}"><img src="${escapeHTML(a.image)}" alt="${escapeHTML(a.title)}" loading="lazy"><div class="activity-card-title"><h2>${escapeHTML(a.title)}</h2></div></a></article>`;}).join('');
+    el.innerHTML=data.map((a,i)=>{
+      const id=a.id||String(i);
+      return `<article class="activity-card"><a class="activity-card-link" href="activity.html?id=${encodeURIComponent(id)}"><img class="media-cover" src="${escapeHTML(a.image)}" alt="${escapeHTML(a.title)}" loading="lazy" decoding="async"><div class="activity-card-title"><h2>${escapeHTML(a.title)}</h2></div></a></article>`;
+    }).join('');
   }catch(e){showError(el);}
 }
 
@@ -162,7 +210,7 @@ async function renderActivityDetail(){
     const id=new URLSearchParams(location.search).get('id')||'';
     let item=data.find(a=>String(a.id)===id);if(!item&&/^\d+$/.test(id))item=data[Number(id)];
     if(!item){el.innerHTML='<p class="data-error">해당 활동을 찾을 수 없습니다.</p>';return;}
-    el.innerHTML=`<article class="activity-detail"><a class="activity-back" href="photos.html">← Activities</a><img class="activity-detail-image" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}"><div class="activity-detail-copy"><p class="eyebrow">${escapeHTML(item.type||'연구실 활동')}</p><h2>${escapeHTML(item.title)}</h2><dl class="activity-detail-meta"><div><dt>기간</dt><dd>${escapeHTML(item.date||'—')}</dd></div>${item.location?`<div><dt>장소</dt><dd>${escapeHTML(item.location)}</dd></div>`:''}</dl>${item.detail?`<div class="activity-detail-body"><h3>내용</h3><p>${lines(item.detail)}</p></div>`:''}</div></article>`;
+    el.innerHTML=`<article class="activity-detail"><a class="activity-back" href="photos.html">← Activities</a><img class="activity-detail-image media-contain" src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}" loading="eager" decoding="async"><div class="activity-detail-copy"><p class="eyebrow">${escapeHTML(item.type||'연구실 활동')}</p><h2>${escapeHTML(item.title)}</h2><dl class="activity-detail-meta"><div><dt>기간</dt><dd>${escapeHTML(item.date||'—')}</dd></div>${item.location?`<div><dt>장소</dt><dd>${escapeHTML(item.location)}</dd></div>`:''}</dl>${item.detail?`<div class="activity-detail-body"><h3>내용</h3><p>${lines(item.detail)}</p></div>`:''}</div></article>`;
   }catch(e){showError(el);}
 }
 
@@ -182,6 +230,10 @@ async function renderAllPublications(){
     search?.addEventListener('input',draw);year?.addEventListener('change',draw);draw();
   }catch(e){showError(el);}
 }
+
+document.addEventListener('error',e=>{
+  if(e.target instanceof HTMLImageElement)e.target.classList.add('image-load-error');
+},true);
 
 renderLatestPublications();
 renderNotices();
