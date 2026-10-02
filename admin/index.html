@@ -6,7 +6,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#007a33">
   <title>FPFT Lab 간편 관리</title>
-  <link rel="stylesheet" href="./admin.css?v=20261002b">
+  <link rel="stylesheet" href="./admin.css?v=20261002c">
 </head>
 <body data-admin-mode="student">
   <div id="preflight" class="setup">
@@ -39,12 +39,12 @@
         <span>공지사항, 논문, 연구실 활동, 연구과제만 노출됩니다. 연구구조와 PI 정보 같은 고급 항목은 교수용 전체 관리에서 수정합니다.</span>
       </div>
       <div class="fpft-helpitem">
-        <strong>② 이미지는 원본 그대로 업로드</strong>
-        <span>이미지 크기를 따로 줄이지 않아도 됩니다. 홈페이지에서 용도에 맞게 자동으로 맞춰 표시됩니다.</span>
+        <strong>② 이미지는 Decap 기본 업로더 사용</strong>
+        <span>이미지 필드에서 업로드를 열고 파일을 선택한 뒤 ‘선택한 것으로 결정’을 누르세요. 별도 커스텀 업로더는 사용하지 않습니다.</span>
       </div>
       <div class="fpft-helpitem">
-        <strong>③ 드래그 또는 파일 선택</strong>
-        <span>업로드 창에 파일을 끌어다 놓거나 ‘파일 선택’ 버튼으로 컴퓨터에서 첨부할 수 있습니다.</span>
+        <strong>③ 마지막에 저장</strong>
+        <span>이미지나 내용을 실제 필드에 반영한 뒤 편집 화면의 Decap 저장/발행 버튼으로 변경사항을 저장하세요.</span>
       </div>
     </section>
 
@@ -64,7 +64,7 @@
           return;
         }
         preflight.remove();shell.hidden=false;
-        addScript('./admin-ui.js?v=20261002b',()=>addScript('https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js'));
+        addScript('./admin-ui.js?v=20261002c',()=>addScript('https://cdn.jsdelivr.net/npm/decap-cms@^3.0.0/dist/decap-cms.js'));
       }catch(error){console.error(error);preflight.innerHTML='<main class="card"><div class="brand">CNU FPFT Lab</div><h1>설정 파일을 읽지 못했습니다.</h1><p>admin/config.yml을 확인해 주세요.</p><div class="links"><a class="secondary" href="/">홈페이지로 돌아가기</a></div></main>';}
     }
     boot();
