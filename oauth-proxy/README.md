@@ -1,127 +1,92 @@
 # FPFT Lab Decap CMS OAuth Proxy
 
-Decap CMS의 `github` backend를 GitHub Pages에서 사용하기 위한 소형 OAuth 프록시입니다.
+Decap CMS의 `github` backend를 GitHub Pages에서 사용하기 위한 Cloudflare Worker OAuth 프록시입니다.
 
-- 홈페이지: `https://cnu-fpft-lab.github.io/`
-- 관리자: `https://cnu-fpft-lab.github.io/admin/`
-- 저장소: `CNU-FPFT-Lab/cnu-fpft-lab.github.io`
-- 실행 환경: Cloudflare Workers
+## 편집 경로
 
-Decap Turbo 구독 없이 여러 학생이 각자의 GitHub 계정으로 로그인할 수 있도록 구성합니다. 편집자는 GitHub 저장소에 push 권한이 있어야 합니다.
+- 간편 관리: `https://cnu-fpft-lab.github.io/admin/`
+  - 교수 + 허용된 학생 계정
+  - 공지사항, 논문, 연구실 활동, 연구과제
+- 교수용 전체 관리: `https://cnu-fpft-lab.github.io/manage/`
+  - 관리자 허용목록 계정만 접근
+  - 공지사항, 논문, 활동, 구성원, 연구과제, 연구분야 전체
 
-## 1. GitHub OAuth App 생성
+두 화면은 같은 GitHub 저장소 `CNU-FPFT-Lab/cnu-fpft-lab.github.io`를 사용하지만 OAuth Worker가 `site_id`를 기준으로 역할을 구분합니다.
 
-GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
+## GitHub OAuth App
 
-입력 예시:
+Homepage URL:
 
 ```text
-Application name
-CNU FPFT Lab CMS
-
-Homepage URL
 https://cnu-fpft-lab.github.io/
 ```
 
-Authorization callback URL은 Worker를 먼저 배포한 뒤 다음과 같이 입력합니다.
+Authorization callback URL:
 
 ```text
 https://cnu-fpft-decap-oauth.<cloudflare-account>.workers.dev/callback?provider=github
 ```
 
-이 프록시는 refresh token 처리를 하지 않으므로 OAuth App 설정에서 **Expire user access tokens** 옵션은 비활성화하는 것을 권장합니다.
+OAuth App의 Client Secret은 저장소에 기록하지 않습니다.
 
-생성 후 `Client ID`와 새로 생성한 `Client Secret`을 복사합니다. Client Secret은 GitHub 저장소에 절대 기록하지 않습니다.
-
-## 2. Cloudflare Worker 배포
-
-Node.js가 설치된 PC에서 저장소를 clone한 뒤:
+## Worker 배포
 
 ```bash
 cd oauth-proxy
 npm install
 npx wrangler login
-```
-
-secret을 등록합니다.
-
-```bash
 npx wrangler secret put GITHUB_OAUTH_ID
 npx wrangler secret put GITHUB_OAUTH_SECRET
 npx wrangler secret put STATE_SECRET
-```
-
-- `GITHUB_OAUTH_ID`: GitHub OAuth App Client ID
-- `GITHUB_OAUTH_SECRET`: GitHub OAuth App Client Secret
-- `STATE_SECRET`: 임의로 만든 충분히 긴 랜덤 문자열
-
-그 다음 배포합니다.
-
-```bash
 npm run deploy
 ```
 
-출력되는 `https://....workers.dev` 주소를 기록합니다.
+`GITHUB_OAUTH_ID`, `GITHUB_OAUTH_SECRET`, `STATE_SECRET`은 Cloudflare secret으로만 관리합니다.
 
-## 3. GitHub OAuth App callback URL 확정
+## 계정별 접근 설정
 
-GitHub OAuth App 설정의 callback URL을 실제 Worker 주소로 정확히 설정합니다.
+`wrangler.toml`의 다음 변수를 사용합니다.
 
-```text
-https://<실제-worker>.workers.dev/callback?provider=github
+```toml
+MANAGER_GITHUB_USERS = "dkrnd2"
+STUDENT_GITHUB_USERS = "student-a,student-b"
 ```
 
-wildcard callback은 사용할 필요가 없습니다.
+- `MANAGER_GITHUB_USERS`: `/manage/` 접근 허용 계정
+- `STUDENT_GITHUB_USERS`: `/admin/` 추가 허용 계정
+- 관리자 계정은 `/admin/`에도 자동으로 접근할 수 있습니다.
+- 학생 목록이 비어 있으면 교수/관리자 계정만 `/admin/`을 사용할 수 있습니다.
 
-## 4. Decap CMS 연결
+학생을 추가하거나 삭제한 뒤에는 Worker를 다시 배포합니다.
 
-`admin/config.yml`의 아래 값을 변경합니다.
-
-```yaml
-base_url: REPLACE_WITH_OAUTH_WORKER_URL
+```bash
+cd oauth-proxy
+npm run deploy
 ```
 
-예:
+## 저장소 권한
 
-```yaml
-base_url: https://cnu-fpft-decap-oauth.example.workers.dev
-```
-
-`/auth`를 뒤에 붙이지 않습니다. Decap CMS가 `auth_endpoint: auth`를 이용해 자동으로 `/auth`를 호출합니다.
-
-커밋한 뒤:
-
-```text
-https://cnu-fpft-lab.github.io/admin/
-```
-
-에 접속해 **Login with GitHub**를 선택합니다.
-
-## 5. 학생 편집 권한
-
-학생 GitHub 계정은 저장소에 `Write` 권한이 있어야 합니다.
+OAuth 허용목록과 별개로, Decap CMS에서 실제 저장하려면 GitHub 저장소 쓰기 권한이 필요합니다.
 
 권장 운영:
 
 1. `CNU-FPFT-Lab` Organization에 `website-editors` 팀 생성
-2. 해당 팀에 이 저장소 `Write` 권한 부여
-3. 홈페이지 관리 학생을 팀에 추가
-4. 졸업 시 팀에서 제거
+2. 학생 계정에는 이 저장소의 `Write` 권한 부여
+3. `STUDENT_GITHUB_USERS`에도 동일한 GitHub username 등록
+4. 졸업 또는 담당 종료 시 팀과 허용목록에서 모두 제거
 
-Worker의 `ALLOWED_GITHUB_USERS` 변수에 GitHub username을 쉼표로 입력하면 OAuth 로그인 자체를 특정 사용자로 제한할 수도 있습니다.
+주의: 학생에게 저장소 `Write` 권한이 있으면 GitHub 웹사이트를 통해 저장소 파일을 직접 수정할 수도 있습니다. `/admin/`과 `/manage/` 분리는 CMS 로그인 권한을 구분하는 장치이며, GitHub 자체의 파일별 쓰기 권한 분리 기능은 아닙니다. 더 강한 승인 절차가 필요하면 별도 student branch + PR 승인 방식으로 전환할 수 있습니다.
 
-예:
+## 역할 구분 방식
 
-```toml
-ALLOWED_GITHUB_USERS = "student-a,student-b,professor-account"
-```
+- `/admin/config.yml` → `site_domain: cnu-fpft-lab.github.io`
+- `/manage/config.yml` → `site_domain: cnu-fpft-lab.github.io/manage`
 
-비워두면 OAuth 로그인은 누구나 시도할 수 있지만, 저장소 push 권한이 없는 계정은 Decap에서 변경사항을 저장할 수 없습니다.
+Worker가 OAuth 시작 시 `site_id`를 읽어 `student` 또는 `manager` 역할을 signed state에 넣고, callback에서 해당 역할의 GitHub username allowlist를 검사합니다.
 
 ## 보안 원칙
 
-- `GITHUB_OAUTH_SECRET`은 반드시 Wrangler secret으로 저장합니다.
-- GitHub 저장소, HTML, JavaScript, `config.yml`에 Client Secret을 넣지 않습니다.
-- callback URL은 정확한 Worker URL을 사용합니다.
-- `STATE_SECRET`은 외부에 공개하지 않습니다.
-- 저장소 권한은 `Admin` 대신 학생에게 `Write` 수준만 부여하는 것을 권장합니다.
+- OAuth Client Secret과 `STATE_SECRET`은 저장소에 넣지 않습니다.
+- `/manage/` 허용목록은 최소 계정만 유지합니다.
+- 학생에게 Organization Admin 권한을 주지 않습니다.
+- 담당 종료 시 GitHub 팀 권한과 `STUDENT_GITHUB_USERS`를 모두 제거합니다.
