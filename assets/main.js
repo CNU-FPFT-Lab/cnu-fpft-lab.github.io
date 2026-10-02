@@ -16,7 +16,7 @@ document.addEventListener('keydown',e=>{
 document.querySelectorAll('.nav-group > button').forEach(btn=>btn.addEventListener('click',()=>btn.parentElement.classList.toggle('open')));
 
 // Keep the visible lab identity consistent across all pages.
-document.querySelectorAll('.site-brand-text strong').forEach(el=>el.textContent='식품가공및푸드테크연구실');
+document.querySelectorAll('.site-brand-text strong').forEach(el=>el.textContent='Food Processing and FoodTech Lab');
 document.querySelectorAll('.site-brand-text em').forEach(el=>el.textContent='Chonnam National University');
 document.querySelectorAll('.site-footer strong,.footer strong').forEach(el=>el.textContent='식품가공및푸드테크연구실');
 const homeTitle=document.querySelector('.home-hero h1');
@@ -28,6 +28,33 @@ function asItems(v){return Array.isArray(v)?v:(v&&Array.isArray(v.items)?v.items
 function showError(el){if(el)el.innerHTML='<div class="data-error">데이터를 불러오지 못했습니다. 잠시 후 다시 확인해주세요.</div>';}
 function escapeHTML(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function lines(v=''){return escapeHTML(v).replace(/\n/g,'<br>');}
+
+// GitHub connector writes text reliably but previously corrupted direct binary image uploads.
+// Store verified WebP bytes as base64 text and reconstruct them in the browser instead.
+const imageDataFiles={
+  processing:'assets/image-data/processing.b64',
+  foodtech:'assets/image-data/foodtech.b64',
+  pi:'assets/image-data/pi.b64'
+};
+const imageDataCache={};
+const transparentPixel='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+async function getImageData(key){
+  if(!imageDataFiles[key])throw new Error(`Unknown image key: ${key}`);
+  if(!imageDataCache[key]){
+    imageDataCache[key]=fetch(imageDataFiles[key],{cache:'no-store'}).then(async r=>{
+      if(!r.ok)throw new Error(`${imageDataFiles[key]} (${r.status})`);
+      const data=(await r.text()).replace(/\s+/g,'');
+      if(!data)throw new Error(`Empty image data: ${key}`);
+      return `data:image/webp;base64,${data}`;
+    });
+  }
+  return imageDataCache[key];
+}
+async function hydrateImage(img,key){
+  if(!img)return;
+  try{img.src=await getImageData(key);}
+  catch(e){console.error('Image load failed',key,e);img.classList.add('image-load-error');}
+}
 
 function parsePublication(text){
   const num=(text.match(/^\[(\d+)\]/)||[,''])[1];
@@ -63,10 +90,12 @@ async function renderResearch(){
   try{
     const data=asItems(await getJSON('data/research.json'));
     el.innerHTML=data.map((r,i)=>{
-      const overview=r.overview_figure?`<figure class="research-overview-figure"><img src="${escapeHTML(r.overview_figure)}" alt="${escapeHTML(r.title)} 연구 개요" loading="eager"></figure>`:'';
+      const key=r.id==='processing'?'processing':r.id==='foodtech'?'foodtech':'';
+      const overview=key?`<figure class="research-overview-figure"><img src="${transparentPixel}" data-image-key="${key}" alt="${escapeHTML(r.title)} 연구 개요" loading="eager"></figure>`:'';
       const topics=(r.topics||[]).map(t=>`<article class="topic-card"><h3>${escapeHTML(t.title)}</h3><p>${escapeHTML(t.detail)}</p></article>`).join('');
       return `<section class="research-block ${i===1?'theme-2':''}" id="${escapeHTML(r.id)}"><div class="research-block-grid"><div class="research-number">${escapeHTML(r.number)}</div><div><h2>${escapeHTML(r.title)}</h2>${overview}<div class="topic-grid">${topics}</div></div></div></section>`;
     }).join('');
+    await Promise.all([...el.querySelectorAll('img[data-image-key]')].map(img=>hydrateImage(img,img.dataset.imageKey)));
   }catch(e){showError(el);}
 }
 
@@ -78,8 +107,9 @@ async function renderMembers(){
   try{
     const data=await getJSON('data/members.json');
     if(piEl){
-      const p=data.pi,photo=p.photo||'assets/eunghee-kim-current-v4.svg';
-      piEl.innerHTML=`<img src="${escapeHTML(photo)}" alt="${escapeHTML(p.name_en||p.name)}"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
+      const p=data.pi;
+      piEl.innerHTML=`<img src="${transparentPixel}" data-image-key="pi" alt="${escapeHTML(p.name_en||p.name)}"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
+      await hydrateImage(piEl.querySelector('img[data-image-key="pi"]'),'pi');
     }
     if(studentsEl){
       const groups={};(data.students||[]).forEach(s=>(groups[s.course]||=[]).push(s));
