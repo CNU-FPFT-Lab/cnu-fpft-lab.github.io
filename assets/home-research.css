@@ -1,8 +1,5 @@
-.home-research-visual{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.home-research-panel{display:block;min-width:0;background:#fff;color:inherit;text-decoration:none;position:relative;overflow:hidden}
-.home-research-panel+ .home-research-panel{border-left:1px solid var(--line)}
-.home-research-panel img{display:block;width:100%;height:auto;max-width:none;object-fit:contain;opacity:1;background:#fff}
-.home-research-panel img:not(.is-loaded){min-height:260px;background:linear-gradient(110deg,#f4f7f5 8%,#eef2ef 18%,#f4f7f5 33%);background-size:200% 100%;animation:fpftResearchLoading 1.2s linear infinite}
-.home-research-panel.is-error:after{content:"Research image를 불러오지 못했습니다.";position:absolute;inset:0;display:grid;place-items:center;padding:24px;color:var(--muted);background:#f6f8f5;font-size:14px}
-@keyframes fpftResearchLoading{to{background-position-x:-200%}}
-@media(max-width:760px){.home-research-visual{grid-template-columns:1fr}.home-research-panel+ .home-research-panel{border-left:0;border-top:1px solid var(--line)}.home-research-panel img:not(.is-loaded){min-height:230px}}
+.home-hero-research-single{position:relative;min-height:560px;display:grid;align-items:end;overflow:hidden;background:#0d2419}
+.home-hero-research-single>img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center 42%;opacity:.72;filter:blur(.45px) saturate(.94) contrast(.97);transform:scale(1.003);background:#f5f5f2}
+.home-hero-research-single::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,26,16,.78) 0%,rgba(5,26,16,.46) 48%,rgba(5,26,16,.12) 100%),linear-gradient(0deg,rgba(0,0,0,.42),transparent 58%)}
+.home-hero-research-single .home-hero-content{position:relative;z-index:2;color:#fff}
+@media(max-width:760px){.home-hero-research-single{min-height:500px}.home-hero-research-single>img{object-position:center 38%;filter:blur(.35px) saturate(.94) contrast(.97)}}
