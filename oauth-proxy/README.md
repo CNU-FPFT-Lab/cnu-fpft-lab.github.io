@@ -70,10 +70,12 @@ OAuth 허용목록과 별개로, Decap CMS에서 실제 저장하려면 GitHub �
 
 권장 운영:
 
-1. `CNU-FPFT-Lab` Organization에 `website-editors` 팀 생성
-2. 학생 계정에는 이 저장소의 `Write` 권한 부여
-3. `STUDENT_GITHUB_USERS`에도 동일한 GitHub username 등록
-4. 졸업 또는 담당 종료 시 팀과 허용목록에서 모두 제거
+1. 학생의 **GitHub username**을 정확히 확인합니다. 이메일 주소를 Worker 허용목록에 그대로 넣지 않습니다.
+2. 학생이 Organization 구성원이 아닌 경우에는 이 **저장소의 Outside collaborator**로 초대하고 `Write` 권한을 부여합니다. Outside collaborator는 조직의 팀에 추가할 수 없습니다.
+3. 학생을 Organization 정식 구성원으로 관리할 때에만 필요에 따라 `website-editors` 같은 팀을 만들고 팀에 이 저장소의 `Write` 권한을 설정합니다.
+4. `STUDENT_GITHUB_USERS`에도 동일한 GitHub username을 등록하고 **Cloudflare Worker를 재배포**합니다.
+5. 학생이 GitHub 초대를 수락한 뒤 `/admin/` 로그인 가능, `/manage/` 로그인 거부 여부를 확인합니다.
+6. 담당 종료 시 저장소 또는 팀 쓰기 권한과 OAuth 허용목록 **모두**에서 제거하고 Worker를 다시 배포합니다.
 
 주의: 학생에게 저장소 `Write` 권한이 있으면 GitHub 웹사이트를 통해 저장소 파일을 직접 수정할 수도 있습니다. `/admin/`과 `/manage/` 분리는 CMS 로그인 권한을 구분하는 장치이며, GitHub 자체의 파일별 쓰기 권한 분리 기능은 아닙니다. 더 강한 승인 절차가 필요하면 별도 student branch + PR 승인 방식으로 전환할 수 있습니다.
 
