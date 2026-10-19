@@ -17,7 +17,7 @@ MANAGER_GITHUB_USERS = "dkrnd2"
 # Shared /admin/ accounts. Add student GitHub usernames here, comma-separated.
 # Manager accounts are automatically also allowed to use /admin/.
 # Example: STUDENT_GITHUB_USERS = "student-a,student-b"
-STUDENT_GITHUB_USERS = ""
+STUDENT_GITHUB_USERS = "galdaesallang-lab"
 
 # Deprecated migration variable. Keep empty unless temporarily migrating from the old config.
 ALLOWED_GITHUB_USERS = ""
