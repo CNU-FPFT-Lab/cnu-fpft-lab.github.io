@@ -169,15 +169,21 @@ async function renderMembers(){
   const piEl=document.querySelector('[data-pi]'),studentsEl=document.querySelector('[data-students]');if(!piEl&&!studentsEl)return;
   try{
     const data=await getJSON('data/members.json');
+    // Photo-only CMS data is deliberately separate so students never overwrite
+    // names, course, PI details or other fields in members.json.
+    let photoOverrides={};
+    try{photoOverrides=await getJSON('data/member-photos.json');}
+    catch(error){console.warn('Member photo overrides unavailable; using existing photos.',error);}
     if(piEl){
       const p=data.pi;
-      const piPhoto=await resolveManagedImage(p.photo,'pi');
+      const piPhoto=await resolveManagedImage(photoOverrides.pi||p.photo,'pi');
       piEl.innerHTML=`<img class="media-cover profile-photo" src="${escapeHTML(piPhoto)}" alt="${escapeHTML(p.name_en||p.name)}" loading="eager" decoding="async"><div><p class="eyebrow">Principal Investigator</p><h2>${escapeHTML(p.name_en||p.name)}${p.name?` <span>${escapeHTML(p.name)}</span>`:''}</h2><p class="prof-role">${escapeHTML(p.role)}</p><div class="profile-links"><a href="mailto:${escapeHTML(p.email)}">${escapeHTML(p.email)} ↗</a><a href="tel:+82625302147">${escapeHTML(p.phone)}</a><span>${escapeHTML(p.office)}</span></div></div>`;
     }
     if(studentsEl){
       const groups={};(data.students||[]).forEach(s=>(groups[s.course]||=[]).push(s));
       studentsEl.innerHTML=Object.entries(groups).map(([course,items])=>`<h2 class="member-group-title">${escapeHTML(courseEN[course]||course)}</h2><div class="student-list">${items.map(s=>{
-        const photo=s.photo||fallbackStudentPhoto(s.name);
+        const studentKey=String(s.name_en||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+        const photo=(photoOverrides.students&&photoOverrides.students[studentKey])||s.photo||fallbackStudentPhoto(s.name);
         return `<article class="student-row">${photo?`<img class="student-portrait media-cover" src="${escapeHTML(photo)}" alt="${escapeHTML(s.name_en||s.name)}" loading="lazy" decoding="async">`:`<div class="student-portrait student-portrait-fallback">${escapeHTML((s.name_en||s.name).slice(0,1))}</div>`}<div class="student-info"><p class="eyebrow">${escapeHTML(courseLabelEN[course]||course)}</p><h3>${escapeHTML(s.name_en||s.name)}${s.name?` <span>${escapeHTML(s.name)}</span>`:''}</h3><a href="mailto:${escapeHTML(s.email)}">${escapeHTML(s.email)}</a></div></article>`;
       }).join('')}</div>`).join('');
     }
