@@ -216,3 +216,31 @@ collections:
                     required: false
                     choose_url: false
                     allow_multiple: false
+
+  - label: "구성원 사진"
+    name: "member_photos"
+    description: "PI 및 학생 사진만 변경합니다. 이름·과정·이메일·연구분야는 수정되지 않습니다."
+    editor: {preview: false}
+    files:
+      - label: "구성원 사진 교체"
+        name: "member_photo_list"
+        file: "data/member-photos.json"
+        fields:
+          - label: "연구책임자(PI) 사진"
+            name: "pi"
+            widget: "image"
+            required: false
+            choose_url: false
+            allow_multiple: false
+            hint: "사진을 지정하면 현재 PI 사진보다 우선 적용됩니다. 비우면 기존 사진이 표시됩니다."
+          - label: "학생 프로필 사진"
+            name: "students"
+            widget: "object"
+            collapsed: false
+            fields:
+              - {label: "이지민 (Jimin Lee)", name: "jimin_lee", widget: "image", required: false, choose_url: false, allow_multiple: false}
+              - {label: "이승학 (Seunghak Lee)", name: "seunghak_lee", widget: "image", required: false, choose_url: false, allow_multiple: false}
+              - {label: "주세령 (Saeryeong Ju)", name: "saeryeong_ju", widget: "image", required: false, choose_url: false, allow_multiple: false}
+              - {label: "이수현 (Suhyeon Lee)", name: "suhyeon_lee", widget: "image", required: false, choose_url: false, allow_multiple: false}
+              - {label: "김성무 (Sungmoo Kim)", name: "sungmoo_kim", widget: "image", required: false, choose_url: false, allow_multiple: false}
+              - {label: "김민서 (Minseo Kim)", name: "minseo_kim", widget: "image", required: false, choose_url: false, allow_multiple: false}
